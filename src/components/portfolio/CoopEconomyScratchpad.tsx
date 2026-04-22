@@ -1,6 +1,5 @@
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
-import { useSelector } from "@tanstack/react-store";
 import {
 	createColumnHelper,
 	flexRender,
@@ -9,10 +8,6 @@ import {
 } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { z } from "zod";
-
-import GohMiMergeTool from "#/components/portfolio/GohMiMergeTool";
-import { portfolioGames } from "#/data/portfolio";
-import { gameCarouselStore } from "#/stores/gameCarouselStore";
 
 const allocationSchema = z.object({
 	players: z.coerce.number().min(1).max(8),
@@ -23,11 +18,7 @@ type AllocationRow = { label: string; amount: number };
 
 const columnHelper = createColumnHelper<AllocationRow>();
 
-export default function ToolsPlayground() {
-	const gameIndex = useSelector(gameCarouselStore, (s) => s.gameIndex);
-	const activeGame = portfolioGames[gameIndex];
-	const showGohMiTool = activeGame?.id === "goh";
-
+export default function CoopEconomyScratchpad() {
 	const presetsQuery = useQuery({
 		queryKey: ["tool-presets", "coop-econ"],
 		queryFn: async () => {
@@ -84,25 +75,12 @@ export default function ToolsPlayground() {
 	});
 
 	return (
-		<section className="island-shell mt-10 rounded-[2rem] border border-[var(--line)] p-6 sm:p-8">
-			<p className="island-kicker mb-2">Interactive tools</p>
-			<h3 className="m-0 text-xl font-semibold text-[var(--sea-ink)]">
-				Co-op economy scratchpad
-			</h3>
-			<p className="mt-2 max-w-2xl text-sm text-[var(--sea-ink-soft)]">
-				A compact example: TanStack Form drives inputs, TanStack Table renders
-				derived rows, and TanStack Query loads mock presets you can wire to a
-				real API later. Select <strong>Gates of Hell</strong> in the carousel
-				above for the mission file merge tool.
+		<div className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4 sm:p-5">
+			<p className="mb-3 text-xs text-[var(--sea-ink-soft)]">
+				TanStack Form drives inputs, TanStack Table renders derived rows, and
+				TanStack Query loads mock presets you can wire to a real API later.
 			</p>
-
-			{showGohMiTool ? (
-				<div className="mt-8">
-					<GohMiMergeTool />
-				</div>
-			) : null}
-
-			<div className="mt-6 grid gap-8 lg:grid-cols-2">
+			<div className="grid gap-6 lg:grid-cols-2">
 				<form
 					className="space-y-4"
 					onSubmit={(e) => {
@@ -181,7 +159,7 @@ export default function ToolsPlayground() {
 							{presetsQuery.data?.map((row) => (
 								<li
 									key={row.id}
-									className="rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3 py-2"
+									className="rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2"
 								>
 									<span className="font-semibold">{row.label}</span>{" "}
 									<span className="text-[var(--sea-ink-soft)]">
@@ -234,6 +212,6 @@ export default function ToolsPlayground() {
 					</div>
 				</div>
 			</div>
-		</section>
+		</div>
 	);
 }

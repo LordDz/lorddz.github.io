@@ -27,13 +27,13 @@ export default function Header() {
 					>
 						Portfolio
 					</Link>
-					<Link
+					{/* <Link
 						to="/stack"
 						className="nav-link"
 						activeProps={{ className: "nav-link is-active" }}
 					>
 						Stack
-					</Link>
+					</Link> */}
 					<Link
 						to="/about"
 						className="nav-link"
@@ -41,7 +41,7 @@ export default function Header() {
 					>
 						About
 					</Link>
-					<details className="relative w-full sm:w-auto">
+					{/* <details className="relative w-full sm:w-auto">
 						<summary className="nav-link list-none cursor-pointer">
 							Demos
 						</summary>
@@ -71,7 +71,7 @@ export default function Header() {
 								Address Form
 							</Link>
 						</div>
-					</details>
+					</details> */}
 				</div>
 			</nav>
 		</header>

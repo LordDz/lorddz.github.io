@@ -53,7 +53,10 @@ function StackPage() {
 						"TanStack Router",
 						"File routes in src/routes, Link, loaders-ready tree",
 					],
-					["TanStack Query", "Mock preset fetch on the home tools panel"],
+					[
+						"TanStack Query",
+						"Mock preset fetch in the Gates of Hell economy scratchpad card",
+					],
 					["TanStack Table", "Derived economy rows next to the form"],
 					["TanStack Form", "Controlled numeric inputs with Zod validation"],
 					["TanStack Store", "Selected game index for the carousel"],
