@@ -1,10 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
 import GameCarousel from "#/components/portfolio/GameCarousel";
 import ModProjectCards from "#/components/portfolio/ModProjectCards";
 import SupportBar from "#/components/portfolio/SupportBar";
-import TanStackStrip from "#/components/portfolio/TanStackStrip";
-import ToolsPlayground from "#/components/portfolio/ToolsPlayground";
 import { currentGamePitch } from "#/data/portfolio";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -38,8 +36,6 @@ function Home() {
 				<div className="mt-10 space-y-10">
 					<GameCarousel />
 					<ModProjectCards />
-					<ToolsPlayground />
-					<TanStackStrip />
 				</div>
 			</main>
 		</>
