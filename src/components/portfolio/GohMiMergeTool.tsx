@@ -141,7 +141,7 @@ export default function GohMiMergeTool({
 				<>
 					<p className="island-kicker mb-2">Gates of Hell</p>
 					<h4 className="m-0 text-lg font-semibold text-[var(--sea-ink)]">
-						Mission (.mi) merge
+						Mission conquest merge (Very WIP)
 					</h4>
 					<p className="mt-2 text-sm text-[var(--sea-ink-soft)]">
 						Upload a <strong>reference</strong> mission (vars, triggers,
