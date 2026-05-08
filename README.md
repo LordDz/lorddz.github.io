@@ -1,204 +1,86 @@
-Welcome to your new TanStack Start app! 
+# LordDz Portfolio Website
 
-# Getting Started
+A modern personal portfolio site for game modding and mapping work, built with TanStack Start.
 
-To run this application:
+This project highlights shipped and in-progress work across titles like Gates of Hell, StarCraft II, Black Mesa, Age of Empires II, and more. Content is data-driven and rendered through a fast React + TanStack stack with static prerender support for GitHub Pages.
+
+## What this project is
+
+- Personal portfolio and showcase hub for projects, mods, maps, and videos
+- Built as a single-page style app with file-based routing
+- Designed to deploy as static assets (GitHub Pages friendly)
+- Structured so portfolio entries are easy to update from one data file
+
+## Tech stack
+
+- [TanStack Start](https://tanstack.com/start) (React 19 + Vite)
+- [TanStack Router](https://tanstack.com/router) (file routes under `src/routes`)
+- [TanStack Query](https://tanstack.com/query), Table, Form, Store, and Hotkeys
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Biome](https://biomejs.dev/) for linting and formatting
+
+## Quick start
 
 ```bash
 npm install
 npm run dev
 ```
 
-# Building For Production
+Local app usually runs on `http://localhost:3000`.
 
-To build this application for production:
-
-```bash
-npm run build
-```
-
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+## Scripts
 
 ```bash
-npm run test
+npm run dev      # start local dev server
+npm run build    # production build (client + server output)
+npm run test     # run vitest tests
+npm run lint     # biome lint
+npm run format   # biome format
+npm run check    # biome check (lint + formatting checks)
 ```
 
-## Styling
+## Project structure
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+- `src/routes` - app pages (`/`, `/about`, `/stack`, demo routes)
+- `src/data/portfolio.ts` - core portfolio/game/project content
+- `src/components/portfolio` - portfolio UI blocks and tools
+- `public/portfolio` - static image assets used by entries
+- `vite.config.ts` - TanStack Start + prerender configuration
 
-### Removing Tailwind CSS
+## Deployment (GitHub Pages)
 
-If you prefer not to use Tailwind CSS:
+This site is configured for static hosting.
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
+1. Set base path for your repository site:
+   - Example for `https://lorddz.github.io/website/`:
+   - `VITE_BASE_PATH=/website/`
+2. Build:
+   - `npm run build`
+3. Deploy `dist/client` to Pages (not `dist/server`)
 
-## Linting & Formatting
+You can also automate deployment with `.github/workflows/deploy-pages.yml`.
 
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
+## Environment variables
 
+| Variable | Purpose |
+| --- | --- |
+| `VITE_BASE_PATH` | Vite base path for asset URLs and router base path (`/` for root site, `/website/` for project site). |
 
-```bash
-npm run lint
-npm run format
-npm run check
-```
+## Content updates
 
+Most portfolio content lives in `src/data/portfolio.ts`:
 
+- Add/edit games and projects
+- Update links (YouTube, Steam Workshop, Steam store)
+- Swap thumbnails and card images
 
-## Routing
+If you want to personalize the site further, start with:
 
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
+- `src/components/Header.tsx`
+- `src/components/portfolio/SupportBar.tsx`
+- `src/routes/about.tsx`
 
-### Adding A Route
+## Notes
 
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'LordDz' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+- Some links and placeholder media may still need final production replacements.
+- Demo routes under `src/routes/demo` can be removed once no longer needed.
