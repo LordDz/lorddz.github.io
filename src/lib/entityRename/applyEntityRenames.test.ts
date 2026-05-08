@@ -6,6 +6,7 @@ describe("applyEntityRenames", () => {
 	it("renames known entities on Entity definition lines", () => {
 		const input = [
 			'Entity "imp_building7"',
+			'{Entity "imp_building7" 0x2385',
 			'Entity "imp_bunker07_new"',
 			'Entity "imp_depot_octogon"',
 		].join("\n");
@@ -13,9 +14,14 @@ describe("applyEntityRenames", () => {
 		const result = applyEntityRenames(input);
 
 		expect(result.content).toContain('Entity "imp_building_desert6"');
+		expect(result.content).toContain('{Entity "imp_building_desert6" 0x2385');
 		expect(result.content).toContain('Entity "imp_depot_octogon"');
 		expect(result.content).toContain('Entity "imp_bunker_helipad"');
-		expect(result.renamedCount).toBe(3);
+		expect(result.renamedCount).toBe(4);
+		const impBuildingChange = result.changedEntities.find(
+			(change) => change.from === "imp_building7",
+		);
+		expect(impBuildingChange?.lineNumbers).toEqual([1, 2]);
 	});
 
 	it("does not rename non-Entity lines even if quoted token matches", () => {

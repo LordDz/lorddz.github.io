@@ -30,8 +30,8 @@ function ToolsRoute() {
 					All tools process data in-browser and keep your files local.
 				</p>
 				<div className="space-y-5">
-					<GohMiMergeTool />
 					<GohEntityRenameTool />
+					<GohMiMergeTool />
 				</div>
 			</section>
 		</main>

@@ -28,6 +28,7 @@ type ProcessedFile = {
 		from: string;
 		to: string;
 		count: number;
+		lineNumbers: number[];
 	}>;
 };
 
@@ -173,7 +174,9 @@ export default function GohEntityRenameTool({
 			if (file.entityChanges.length === 0) continue;
 			lines.push(file.name);
 			for (const change of file.entityChanges) {
-				lines.push(`- ${change.from} -> ${change.to} (${change.count})`);
+				lines.push(
+					`- lines ${change.lineNumbers.join(", ")}: ${change.from} -> ${change.to} (${change.count})`,
+				);
 			}
 			lines.push("");
 		}
