@@ -60,6 +60,28 @@ This site is configured for static hosting.
 
 You can also automate deployment with `.github/workflows/deploy-pages.yml`.
 
+### Deploy to root URL (`https://lorddz.github.io/`)
+
+This repository is `LordDz/website`, so by default it serves at `/website/`.
+If you want your live site on the root domain, use the included workflow:
+`.github/workflows/deploy-user-site-root.yml`.
+
+It builds this repo and pushes `dist/client` to your user-site repository
+(`LordDz/lorddz.github.io`), which controls the root URL.
+
+One-time setup:
+
+1. Create `LordDz/lorddz.github.io` if it does not already exist.
+2. In `LordDz/lorddz.github.io` -> Settings -> Pages:
+   - Source: Deploy from a branch
+   - Branch: `main` (or whichever branch you choose), folder `/ (root)`
+3. In this repo (`LordDz/website`) -> Settings -> Secrets and variables -> Actions:
+   - Add secret `USER_SITE_DEPLOY_TOKEN` (token with **contents: write** on `LordDz/lorddz.github.io`)
+   - Optional variable `USER_SITE_REPO` (default: `LordDz/lorddz.github.io`)
+   - Optional variable `USER_SITE_BRANCH` (default: `main`)
+
+After setup, every push to `master` in this repo updates your root site.
+
 ## Environment variables
 
 | Variable | Purpose |
