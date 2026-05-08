@@ -4,6 +4,7 @@ import { type ChangeEvent, useMemo, useState } from "react";
 import ActionButton from "#/components/ActionButton/ActionButton";
 import FilePickerInput from "#/components/FilePickerInput/FilePickerInput";
 import { applyEntityRenames } from "#/lib/entityRename/applyEntityRenames";
+import { isAcceptedEntityRenameFilename } from "#/lib/entityRename/fileAcceptance";
 
 type AcceptedFile = {
 	id: string;
@@ -32,11 +33,6 @@ type ProcessedFile = {
 	}>;
 };
 
-function isAcceptedFile(file: File) {
-	const name = file.name.toLowerCase();
-	return name === "map" || name.endsWith(".mi");
-}
-
 function toKb(bytes: number) {
 	return `${Math.max(1, Math.round(bytes / 1024)).toLocaleString()} KB`;
 }
@@ -60,10 +56,11 @@ export default function GohEntityRenameTool({
 		? "mt-4 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4 sm:p-5"
 		: "rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6";
 
-	const processFiles = (incoming: FileList | null) => {
+	const processFiles = async (incoming: FileList | null) => {
 		if (!incoming?.length) return;
 		setError(null);
 		setProcessed([]);
+		setProcessing(true);
 		const firstRelativePath = Array.from(incoming)
 			.map((file) => file.webkitRelativePath)
 			.find((path) => Boolean(path));
@@ -73,7 +70,7 @@ export default function GohEntityRenameTool({
 		const nextRejected: RejectedFile[] = [];
 		for (const file of Array.from(incoming)) {
 			const id = `${file.name}-${file.size}-${file.lastModified}`;
-			if (isAcceptedFile(file)) {
+			if (isAcceptedEntityRenameFilename(file.name)) {
 				nextAccepted.push({ id, name: file.name, size: file.size, file });
 				continue;
 			}
@@ -85,6 +82,27 @@ export default function GohEntityRenameTool({
 		}
 		setAccepted(nextAccepted);
 		setRejected(nextRejected);
+
+		try {
+			const nextProcessed: ProcessedFile[] = [];
+			for (const item of nextAccepted) {
+				const source = await item.file.text();
+				const result = applyEntityRenames(source);
+				nextProcessed.push({
+					id: item.id,
+					name: item.name,
+					content: result.content,
+					renamedCount: result.renamedCount,
+					changed: result.renamedCount > 0,
+					entityChanges: result.changedEntities,
+				});
+			}
+			setProcessed(nextProcessed);
+		} catch {
+			setError("Could not read one or more selected files.");
+		} finally {
+			setProcessing(false);
+		}
 	};
 
 	const onPickFiles = (e: ChangeEvent<HTMLInputElement>) => {
@@ -115,32 +133,6 @@ export default function GohEntityRenameTool({
 		);
 		return { filesChanged, totalRenames };
 	}, [processed]);
-
-	const applyRenames = async () => {
-		if (accepted.length === 0) return;
-		setError(null);
-		setProcessing(true);
-		try {
-			const nextProcessed: ProcessedFile[] = [];
-			for (const item of accepted) {
-				const source = await item.file.text();
-				const result = applyEntityRenames(source);
-				nextProcessed.push({
-					id: item.id,
-					name: item.name,
-					content: result.content,
-					renamedCount: result.renamedCount,
-					changed: result.renamedCount > 0,
-					entityChanges: result.changedEntities,
-				});
-			}
-			setProcessed(nextProcessed);
-		} catch {
-			setError("Could not read one or more selected files.");
-		} finally {
-			setProcessing(false);
-		}
-	};
 
 	const downloadZip = async () => {
 		if (processed.length === 0) return;
@@ -218,12 +210,6 @@ export default function GohEntityRenameTool({
 
 			<div className="mt-4 flex flex-wrap items-center gap-2">
 				<ActionButton
-					disabled={processing || accepted.length === 0}
-					onClick={applyRenames}
-				>
-					{processing ? "Changing texts…" : "Change texts"}
-				</ActionButton>
-				<ActionButton
 					disabled={downloadBusy || processing || processed.length === 0}
 					onClick={downloadZip}
 				>
@@ -232,6 +218,11 @@ export default function GohEntityRenameTool({
 				<span className="text-xs text-[var(--sea-ink-soft)]">
 					Accepted: {accepted.length} file(s) ({toKb(acceptedTotal)})
 				</span>
+				{processing ? (
+					<span className="text-xs text-[var(--sea-ink-soft)]">
+						Changing texts…
+					</span>
+				) : null}
 			</div>
 			{processed.length > 0 ? (
 				<p className="mt-2 text-xs text-[var(--sea-ink-soft)]">
@@ -244,6 +235,18 @@ export default function GohEntityRenameTool({
 					{error}
 				</p>
 			) : null}
+
+			<div className="mt-4">
+				<p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
+					Changed entities
+				</p>
+				<textarea
+					readOnly
+					className="min-h-[140px] w-full resize-y rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 font-mono text-xs text-[var(--sea-ink)]"
+					value={changedEntitiesText}
+					rows={10}
+				/>
+			</div>
 
 			<div className="mt-4 grid gap-4 lg:grid-cols-2">
 				<div>
@@ -300,18 +303,6 @@ export default function GohEntityRenameTool({
 							))}
 						</ul>
 					)}
-				</div>
-
-				<div className="lg:col-span-2">
-					<p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
-						Changed entities
-					</p>
-					<textarea
-						readOnly
-						className="min-h-[140px] w-full resize-y rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 font-mono text-xs text-[var(--sea-ink)]"
-						value={changedEntitiesText}
-						rows={10}
-					/>
 				</div>
 			</div>
 		</div>
