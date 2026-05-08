@@ -1,5 +1,3 @@
-export type ModProjectEmbed = "coop-economy" | "goh-mi-merge";
-
 export type ModProject = {
 	id: string;
 	title: string;
@@ -8,8 +6,6 @@ export type ModProject = {
 	youtubeUrl?: string;
 	steamWorkshopUrl?: string;
 	steamStoreUrl?: string;
-	/** In-card demo instead of external links only */
-	embed?: ModProjectEmbed;
 };
 
 export type PortfolioGame = {
@@ -59,14 +55,6 @@ export const portfolioGames: PortfolioGame[] = [
 				image: portfolioImg("goh_ffa.jpg"),
 				steamWorkshopUrl:
 					"https://steamcommunity.com/sharedfiles/filedetails/?id=3483216664",
-			},
-			{
-				id: "goh-mi-merge-tool",
-				title: "Mission (.mi) merge",
-				summary:
-					"Browser-side helper for Gates of Hell / Men of War style missions: patch vars, triggers, and entities from a reference .mi into a target map, with collision-safe entity id remaps.",
-				image: portfolioImg("goh_mission_merge.jpg"),
-				embed: "goh-mi-merge",
 			},
 		],
 	},

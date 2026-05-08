@@ -27,6 +27,13 @@ export default function Header() {
 					>
 						Portfolio
 					</Link>
+					<Link
+						to="/tools"
+						className="nav-link"
+						activeProps={{ className: "nav-link is-active" }}
+					>
+						Tools
+					</Link>
 					{/* <Link
 						to="/stack"
 						className="nav-link"
