@@ -29,13 +29,18 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "LordDz · games & mods",
+				title: "LordDz",
 			},
 		],
 		links: [
 			{
 				rel: "stylesheet",
 				href: appCss,
+			},
+			{
+				rel: "icon",
+				type: "image/png",
+				href: `${import.meta.env.BASE_URL}favicon-dz2.png`,
 			},
 		],
 	}),

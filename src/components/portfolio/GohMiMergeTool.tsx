@@ -132,8 +132,8 @@ export default function GohMiMergeTool({
 	}, [outputText, targetName]);
 
 	const shellClass = embedded
-		? "mt-4 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4 sm:p-5"
-		: "rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6";
+		? "mt-4 rounded-2xl border border-[rgba(122,63,52,0.42)] bg-[linear-gradient(160deg,rgba(96,44,36,0.16),rgba(132,64,54,0.1))] p-4 sm:p-5"
+		: "rounded-2xl border border-[rgba(122,63,52,0.42)] bg-[linear-gradient(160deg,rgba(96,44,36,0.16),rgba(132,64,54,0.1))] p-5 sm:p-6";
 
 	return (
 		<div className={shellClass}>

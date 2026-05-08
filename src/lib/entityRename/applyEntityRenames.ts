@@ -20,6 +20,7 @@ type EntityChange = {
 	from: string;
 	to: string;
 	count: number;
+	lineNumbers: number[];
 };
 
 export function applyEntityRenames(text: string) {
@@ -27,8 +28,8 @@ export function applyEntityRenames(text: string) {
 	let renamedCount = 0;
 	const countsByPair = new Map<string, EntityChange>();
 
-	const nextLines = text.split(/\r?\n/).map((line) => {
-		const match = /^(\s*Entity\s+")([^"]+)(".*)$/.exec(line);
+	const nextLines = text.split(/\r?\n/).map((line, index) => {
+		const match = /^(\s*\{?\s*Entity\s+")([^"]+)(".*)$/.exec(line);
 		if (!match) return line;
 
 		const [, prefix, entityName, suffix] = match;
@@ -40,11 +41,13 @@ export function applyEntityRenames(text: string) {
 		const existing = countsByPair.get(pairKey);
 		if (existing) {
 			existing.count += 1;
+			existing.lineNumbers.push(index + 1);
 		} else {
 			countsByPair.set(pairKey, {
 				from: entityName,
 				to: replacement,
 				count: 1,
+				lineNumbers: [index + 1],
 			});
 		}
 		return `${prefix}${replacement}${suffix}`;
