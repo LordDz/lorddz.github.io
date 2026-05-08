@@ -1,8 +1,6 @@
 import { useSelector } from "@tanstack/react-store";
 import { ExternalLink, Play } from "lucide-react";
 
-import CoopEconomyScratchpad from "#/components/portfolio/CoopEconomyScratchpad";
-import GohMiMergeTool from "#/components/portfolio/GohMiMergeTool";
 import { portfolioGames } from "#/data/portfolio";
 import { gameCarouselStore } from "#/stores/gameCarouselStore";
 
@@ -23,7 +21,7 @@ export default function ModProjectCards() {
 						Boolean(project.youtubeUrl) ||
 						Boolean(project.steamWorkshopUrl) ||
 						Boolean(project.steamStoreUrl);
-					const showLinkHint = !hasOutbound && !project.embed;
+					const showLinkHint = !hasOutbound;
 
 					return (
 						<article
@@ -45,12 +43,6 @@ export default function ModProjectCards() {
 								<p className="mt-2 flex-1 text-sm text-[var(--sea-ink-soft)]">
 									{project.summary}
 								</p>
-								{project.embed === "coop-economy" ? (
-									<CoopEconomyScratchpad />
-								) : null}
-								{project.embed === "goh-mi-merge" ? (
-									<GohMiMergeTool embedded />
-								) : null}
 								{hasOutbound || showLinkHint ? (
 									<div className="mt-4 flex flex-wrap gap-2">
 										{project.youtubeUrl ? (

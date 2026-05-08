@@ -1,17 +1,4 @@
-const supportLinks = [
-	{
-		label: "Patreon",
-		href: "https://www.patreon.com/LordDz",
-		className:
-			"border-[rgba(50,143,151,0.35)] bg-[rgba(79,184,178,0.16)] text-[var(--lagoon-deep)] hover:bg-[rgba(79,184,178,0.26)]",
-	},
-	{
-		label: "Buy Me a Coffee",
-		href: "https://www.buymeacoffee.com/lorddz",
-		className:
-			"border-[rgba(23,58,64,0.2)] bg-white/60 text-[var(--sea-ink)] hover:border-[rgba(23,58,64,0.35)]",
-	},
-] as const;
+import { supportLinks } from "./supportLinks";
 
 export default function SupportBar() {
 	return (

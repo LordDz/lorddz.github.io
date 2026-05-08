@@ -1,5 +1,7 @@
 import { type ChangeEvent, useCallback, useState } from "react";
 
+import ActionButton from "#/components/ActionButton/ActionButton";
+import FilePickerInput from "#/components/FilePickerInput/FilePickerInput";
 import { buildMergeResult } from "#/lib/miMerge/mergeMi";
 
 const LARGE_BYTES = 15 * 1024 * 1024;
@@ -139,7 +141,7 @@ export default function GohMiMergeTool({
 				<>
 					<p className="island-kicker mb-2">Gates of Hell</p>
 					<h4 className="m-0 text-lg font-semibold text-[var(--sea-ink)]">
-						Mission (.mi) merge
+						Mission conquest merge (Very WIP)
 					</h4>
 					<p className="mt-2 text-sm text-[var(--sea-ink-soft)]">
 						Upload a <strong>reference</strong> mission (vars, triggers,
@@ -166,46 +168,30 @@ export default function GohMiMergeTool({
 			</p>
 
 			<div className={`flex flex-wrap gap-4 ${embedded ? "" : "mt-4"}`}>
-				<label className="block text-sm font-semibold text-[var(--sea-ink)]">
-					Reference .mi
-					<input
-						type="file"
-						accept=".mi,text/plain"
-						disabled={busy}
-						className="mt-1 block text-xs text-[var(--sea-ink-soft)]"
-						onChange={onPickReference}
-					/>
-					{referenceName ? (
-						<span className="mt-1 block text-xs font-normal text-[var(--sea-ink-soft)]">
-							{referenceName}
-						</span>
-					) : null}
-				</label>
-				<label className="block text-sm font-semibold text-[var(--sea-ink)]">
-					Target .mi
-					<input
-						type="file"
-						accept=".mi,text/plain"
-						disabled={busy}
-						className="mt-1 block text-xs text-[var(--sea-ink-soft)]"
-						onChange={onPickTarget}
-					/>
-					{targetName ? (
-						<span className="mt-1 block text-xs font-normal text-[var(--sea-ink-soft)]">
-							{targetName}
-						</span>
-					) : null}
-				</label>
+				<FilePickerInput
+					label="Reference .mi"
+					accept=".mi,text/plain"
+					disabled={busy}
+					selectedName={referenceName}
+					onChange={onPickReference}
+				/>
+				<FilePickerInput
+					label="Target .mi"
+					accept=".mi,text/plain"
+					disabled={busy}
+					selectedName={targetName}
+					onChange={onPickTarget}
+				/>
 			</div>
 
-			<button
-				type="button"
-				disabled={busy || !referenceText || !targetText}
-				className="mt-4 rounded-full border border-[rgba(50,143,151,0.35)] bg-[rgba(79,184,178,0.16)] px-5 py-2 text-sm font-semibold text-[var(--lagoon-deep)] transition enabled:hover:bg-[rgba(79,184,178,0.26)] disabled:opacity-50"
-				onClick={runMerge}
-			>
-				{busy ? "Working…" : "Preview & merge"}
-			</button>
+			<div className="mt-4">
+				<ActionButton
+					disabled={busy || !referenceText || !targetText}
+					onClick={runMerge}
+				>
+					{busy ? "Working…" : "Preview & merge"}
+				</ActionButton>
+			</div>
 
 			{error ? (
 				<p className="mt-3 text-sm text-red-600" role="alert">
@@ -267,14 +253,9 @@ export default function GohMiMergeTool({
 							rows={10}
 						/>
 					</div>
-					<button
-						type="button"
-						disabled={!outputText}
-						className="rounded-full border border-[rgba(47,106,74,0.4)] bg-[rgba(47,106,74,0.12)] px-5 py-2 text-sm font-semibold text-[var(--lagoon-deep)] transition enabled:hover:bg-[rgba(47,106,74,0.2)] disabled:opacity-50"
-						onClick={downloadMerged}
-					>
+					<ActionButton disabled={!outputText} onClick={downloadMerged}>
 						Download merged .mi
-					</button>
+					</ActionButton>
 				</div>
 			) : null}
 		</div>
