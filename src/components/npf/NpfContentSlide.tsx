@@ -5,12 +5,14 @@ import NpfTickingClockAudio from "./NpfTickingClockAudio";
 type Props = {
 	slide: NpfContentSlideData;
 	isActive: boolean;
+	audioPaused: boolean;
 	showNotesHint?: boolean;
 };
 
 export default function NpfContentSlide({
 	slide,
 	isActive,
+	audioPaused,
 	showNotesHint,
 }: Props) {
 	const showDistractionCube = slide.id === "positivt";
@@ -19,7 +21,9 @@ export default function NpfContentSlide({
 	return (
 		<div className="npf-content-bg relative flex h-full min-h-dvh w-full items-center justify-center overflow-hidden px-6 py-16 sm:px-12">
 			{showDistractionCube ? <NpfDistractionCube /> : null}
-			{showTickingClock ? <NpfTickingClockAudio isActive={isActive} /> : null}
+			{showTickingClock ? (
+				<NpfTickingClockAudio isActive={isActive} userPaused={audioPaused} />
+			) : null}
 			<div className="relative z-10 w-full max-w-3xl">
 				{slide.kicker ? (
 					<p className="island-kicker mb-3 text-[var(--kicker)]">

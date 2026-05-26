@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
 
+import { NPF_PRESENTATION_VOLUME } from "./npf-audio";
+
 const TICKING_CLOCK_SRC = `${import.meta.env.BASE_URL}npf/ticking-clock.mp3`;
 const PAUSE_MS = 4000;
-const VOLUME = 0.5;
 
 type Props = {
 	isActive: boolean;
+	userPaused: boolean;
 };
 
 function prefersReducedMotion(): boolean {
@@ -16,7 +18,7 @@ function prefersReducedMotion(): boolean {
 }
 
 /** Tick → 4s silence → repeat. Only runs when slide is active. */
-export default function NpfTickingClockAudio({ isActive }: Props) {
+export default function NpfTickingClockAudio({ isActive, userPaused }: Props) {
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const pauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,7 +42,7 @@ export default function NpfTickingClockAudio({ isActive }: Props) {
 		};
 
 		const playTick = () => {
-			audio.volume = VOLUME;
+			audio.volume = NPF_PRESENTATION_VOLUME;
 			audio.currentTime = 0;
 			void audio.play().catch(() => {});
 		};
@@ -66,14 +68,25 @@ export default function NpfTickingClockAudio({ isActive }: Props) {
 			return;
 		}
 
+		if (userPaused) {
+			clearPauseTimeout();
+			audio.pause();
+			audio.removeEventListener("ended", onEnded);
+			return;
+		}
+
 		audio.addEventListener("ended", onEnded);
-		playTick();
+		if (audio.paused && audio.currentTime > 0 && !audio.ended) {
+			void audio.play().catch(() => {});
+		} else {
+			playTick();
+		}
 
 		return () => {
 			audio.removeEventListener("ended", onEnded);
 			stopPlayback();
 		};
-	}, [isActive]);
+	}, [isActive, userPaused]);
 
 	return (
 		// Decorative presentation SFX — no speech to caption

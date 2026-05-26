@@ -8,12 +8,16 @@ import {
 	enterNpfFullscreenIfRequested,
 	setNpfPresentingChrome,
 } from "./npf-fullscreen";
+import { npfSlideHasAudio } from "./npf-slide-audio";
 import "./npf-presentation.css";
 
 export default function NpfPresentation() {
 	const [slideIndex, setSlideIndex] = useState(0);
 	const [notesOpen, setNotesOpen] = useState(false);
 	const [notesHintDismissed, setNotesHintDismissed] = useState(false);
+	const [audioPausedBySlide, setAudioPausedBySlide] = useState<
+		Record<number, boolean>
+	>({});
 
 	const isSplash = slideIndex === 0;
 	const contentIndex = slideIndex - 1;
@@ -65,6 +69,18 @@ export default function NpfPresentation() {
 		});
 	}, [isSplash]);
 
+	const toggleSlideAudio = useCallback(() => {
+		if (!npfSlideHasAudio(slideIndex)) {
+			return;
+		}
+		setAudioPausedBySlide((prev) => ({
+			...prev,
+			[slideIndex]: !prev[slideIndex],
+		}));
+	}, [slideIndex]);
+
+	const currentSlideAudioPaused = audioPausedBySlide[slideIndex] ?? false;
+
 	useHotkeys(
 		[
 			{
@@ -87,6 +103,11 @@ export default function NpfPresentation() {
 				callback: toggleNotes,
 				options: { preventDefault: true },
 			},
+			{
+				hotkey: "Space",
+				callback: toggleSlideAudio,
+				options: { preventDefault: true },
+			},
 		],
 		{ enabled: true },
 	);
@@ -104,7 +125,10 @@ export default function NpfPresentation() {
 					className={`npf-slide-layer absolute inset-0 ${slideIndex === 0 ? "is-active" : "is-inactive"}`}
 					aria-hidden={slideIndex !== 0}
 				>
-					<NpfSplashSlide />
+					<NpfSplashSlide
+						isActive={slideIndex === 0}
+						audioPaused={slideIndex === 0 && currentSlideAudioPaused}
+					/>
 				</div>
 
 				{npfContentSlides.map((slide, i) => {
@@ -119,6 +143,7 @@ export default function NpfPresentation() {
 							<NpfContentSlide
 								slide={slide}
 								isActive={isActive}
+								audioPaused={isActive && currentSlideAudioPaused}
 								showNotesHint={index === 1 && !notesHintDismissed && !notesOpen}
 							/>
 						</div>
