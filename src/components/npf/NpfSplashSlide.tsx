@@ -119,6 +119,16 @@ export default function NpfSplashSlide({ isActive, audioPaused }: Props) {
 			) : null}
 			{showCrowd ? <NpfSplashConcertCrowd paused={audioPaused} /> : null}
 			<div className="npf-title-wrap relative z-10 text-center">
+				{audioPaused ? (
+					<div className="npf-splash-paused-hint" aria-hidden>
+						<span className="npf-splash-paused-emoji" aria-hidden>
+							😢
+						</span>
+						<span className="npf-splash-paused-mute" aria-hidden>
+							🔇
+						</span>
+					</div>
+				) : null}
 				<p className="npf-title m-0 select-none">NPF</p>
 				<p className="mt-6 text-sm font-semibold tracking-wide text-white/90 drop-shadow-md sm:text-base">
 					Höger pil för att börja →

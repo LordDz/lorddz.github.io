@@ -57,6 +57,33 @@
 	filter: drop-shadow(0 0 30px rgba(255, 200, 80, 0.8));
 }
 
+.npf-splash-paused-hint {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-bottom: 0.75rem;
+	font-size: clamp(2rem, 8vw, 3.5rem);
+	line-height: 1;
+	filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+	animation: npf-splash-paused-hint-in 0.35s ease-out forwards;
+}
+
+.npf-splash-paused-mute {
+	font-size: 1.15em;
+}
+
+@keyframes npf-splash-paused-hint-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px) scale(0.92);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
 .npf-star {
 	position: absolute;
 	left: 50%;
@@ -350,6 +377,10 @@ body:not(.npf-presenting) .npf-splash-crowd {
 	.npf-splash-burst,
 	.npf-splash-crowd {
 		display: none;
+	}
+
+	.npf-splash-paused-hint {
+		animation: none;
 	}
 
 	.npf-feature-creep {
