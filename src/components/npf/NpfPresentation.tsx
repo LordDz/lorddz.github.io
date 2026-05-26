@@ -101,12 +101,7 @@ export default function NpfPresentation() {
 				options: { preventDefault: true },
 			},
 			{
-				hotkey: "b",
-				callback: toggleNotes,
-				options: { preventDefault: true },
-			},
-			{
-				hotkey: "B",
+				hotkey: "v",
 				callback: toggleNotes,
 				options: { preventDefault: true },
 			},

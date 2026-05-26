@@ -85,7 +85,7 @@ export default function NpfContentSlide({
 					<p className="mt-10 text-sm text-[var(--sea-ink-soft)] opacity-70">
 						Tryck{" "}
 						<kbd className="rounded border border-[var(--line)] px-1.5 py-0.5 font-mono text-xs">
-							B
+							V
 						</kbd>{" "}
 						för att växla talaranteckningar
 					</p>
