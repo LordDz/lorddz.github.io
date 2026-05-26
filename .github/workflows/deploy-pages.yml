@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Publish docs for branch Pages deploy
 
 on:
   push:
@@ -6,19 +6,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  publish-docs:
+    if: github.actor != 'github-actions[bot]' && (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -28,16 +30,18 @@ jobs:
         env:
           VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || '/' }}
         run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist/client
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish build to docs
+        run: |
+          rm -rf docs
+          mkdir -p docs
+          cp -R dist/client/. docs/
+          touch docs/.nojekyll
+      - name: Commit docs changes
+        run: |
+          git add docs
+          if git diff --staged --quiet; then
+            echo "No docs changes to commit."
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore: publish docs [skip ci]"
+          git push origin HEAD:master
