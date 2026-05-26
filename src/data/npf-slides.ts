@@ -172,7 +172,7 @@ Det finns studier där man tror att cirka 50 % i tech har någon typ av NPF – 
 
 Arbetsplatser som gör anpassningar för NPF gör det också lättare för personer utan NPF att fungera bättre, när saker blir tydligare och mer strukturerat.
 
-Tack för att ni lyssnade.`,
+Tack för att ni lyssnade!`,
 	},
 ];
 
