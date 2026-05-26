@@ -1,0 +1,511 @@
+@import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
+
+.npf-deck {
+	--npf-orange: #ff8c1a;
+	--npf-yellow: #ffd54a;
+	--npf-deep: #c44f00;
+	--npf-shadow: #8a3200;
+	font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+.npf-splash-bg {
+	background: radial-gradient(
+		ellipse 80% 70% at 50% 45%,
+		#ffd54a 0%,
+		#ff9f1a 35%,
+		#e86a00 65%,
+		#b84a00 100%
+	);
+}
+
+.npf-splash-glow {
+	position: absolute;
+	inset: -20%;
+	background: radial-gradient(
+		circle at 50% 50%,
+		rgba(255, 240, 150, 0.55) 0%,
+		rgba(255, 160, 40, 0.2) 40%,
+		transparent 70%
+	);
+	pointer-events: none;
+	animation: npf-glow-pulse 2.2s ease-in-out infinite;
+}
+
+.npf-title {
+	font-family: "Titan One", "Manrope", sans-serif;
+	font-size: clamp(5rem, 22vw, 14rem);
+	line-height: 0.9;
+	letter-spacing: -0.04em;
+	color: #fff;
+	text-shadow:
+		0 0 40px rgba(255, 220, 100, 0.9),
+		0 0 80px rgba(255, 140, 30, 0.6),
+		2px 2px 0 var(--npf-orange),
+		3px 3px 0 var(--npf-orange),
+		4px 4px 0 #f57c00,
+		5px 5px 0 #ef6c00,
+		6px 6px 0 #e65100,
+		7px 7px 0 #d84315,
+		8px 8px 0 #bf360c,
+		9px 9px 0 #a33000,
+		10px 10px 0 var(--npf-shadow),
+		12px 14px 24px rgba(80, 30, 0, 0.55);
+	animation: npf-flash 1.4s ease-in-out infinite;
+}
+
+.npf-title-wrap {
+	filter: drop-shadow(0 0 30px rgba(255, 200, 80, 0.8));
+}
+
+.npf-splash-paused-hint {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-bottom: 0.75rem;
+	font-size: clamp(2rem, 8vw, 3.5rem);
+	line-height: 1;
+	filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+	animation: npf-splash-paused-hint-in 0.35s ease-out forwards;
+}
+
+.npf-splash-paused-mute {
+	font-size: 1.15em;
+}
+
+@keyframes npf-splash-paused-hint-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px) scale(0.92);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.npf-star {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	font-size: var(--npf-star-size, 1.25rem);
+	color: #fff9c4;
+	text-shadow:
+		0 0 8px #ffeb3b,
+		0 0 16px #ff9800;
+	opacity: 0;
+	pointer-events: none;
+	animation: npf-star-burst var(--npf-star-duration, 41.7s) ease-out infinite;
+	animation-delay: var(--npf-star-delay, 0s);
+	transform: translate(-50%, -50%);
+}
+
+.npf-star.is-paused {
+	animation-play-state: paused;
+}
+
+.npf-content-bg {
+	background:
+		radial-gradient(
+			ellipse 100% 80% at 50% 0%,
+			rgba(79, 184, 178, 0.12) 0%,
+			transparent 55%
+		),
+		var(--bg-base);
+}
+
+.npf-slide-layer {
+	transition:
+		opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+		transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.npf-slide-layer.is-active {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.npf-slide-layer.is-inactive {
+	opacity: 0;
+	transform: translateY(8px);
+	pointer-events: none;
+}
+
+@keyframes npf-flash {
+	0%,
+	100% {
+		filter: brightness(1) saturate(1);
+		transform: scale(1);
+	}
+	50% {
+		filter: brightness(1.25) saturate(1.15);
+		transform: scale(1.02);
+	}
+}
+
+@keyframes npf-glow-pulse {
+	0%,
+	100% {
+		opacity: 0.7;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.05);
+	}
+}
+
+@keyframes npf-star-burst {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -50%) translate(0, 0) scale(0.3);
+	}
+	15% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -50%)
+			translate(var(--npf-star-end-x, 0), var(--npf-star-end-y, -50vmin))
+			scale(0.6);
+	}
+}
+
+@keyframes npf-splash-burst-rotate {
+	0% {
+		transform: rotate(-25deg);
+	}
+	100% {
+		transform: rotate(25deg);
+	}
+}
+
+.npf-splash-burst {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 8;
+	font-size: var(--npf-star-size, 1.5rem);
+	line-height: 1;
+	filter: drop-shadow(0 0 10px rgba(255, 235, 120, 0.85));
+	opacity: 0;
+	pointer-events: none;
+	animation: npf-star-burst var(--npf-star-duration, 30s) ease-out infinite;
+	animation-delay: var(--npf-star-delay, 0s);
+	transform: translate(-50%, -50%);
+}
+
+.npf-splash-burst-rotate {
+	display: inline-block;
+	animation: npf-splash-burst-rotate
+		calc(var(--npf-star-duration, 30s) / 1.4) ease-in-out infinite;
+	animation-delay: var(--npf-star-delay, 0s);
+}
+
+.npf-splash-burst.is-paused,
+.npf-splash-burst.is-paused .npf-splash-burst-rotate {
+	animation-play-state: paused;
+}
+
+.npf-splash-crowd {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 15;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-evenly;
+	gap: 0.25rem;
+	padding: 0 0.5rem 0.75rem;
+	pointer-events: none;
+	opacity: 0;
+	animation: npf-crowd-fade-in 1.2s ease-out forwards;
+}
+
+.npf-splash-crowd.is-paused {
+	animation-play-state: paused;
+}
+
+/* Lift crowd when site header/footer are visible (not fullscreen). */
+body:not(.npf-presenting) .npf-splash-crowd {
+	bottom: 80px;
+}
+
+@keyframes npf-crowd-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.npf-splash-crowd-figure {
+	font-size: clamp(2rem, 6vw, 3.25rem);
+	line-height: 1;
+	transform-origin: bottom center;
+	animation: npf-crowd-wave 0.9s ease-in-out infinite;
+	animation-delay: var(--npf-crowd-delay, 0s);
+	filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+}
+
+.npf-splash-crowd.is-paused .npf-splash-crowd-figure {
+	animation-play-state: paused;
+}
+
+@keyframes npf-crowd-wave {
+	0%,
+	100% {
+		transform: rotate(-8deg) translateY(0);
+	}
+	50% {
+		transform: rotate(14deg) translateY(-6px);
+	}
+}
+
+.npf-feature-creep {
+	position: absolute;
+	left: 0;
+	top: 18%;
+	z-index: 20;
+	width: min(90vw, 42rem);
+	padding: 1.5rem 2rem;
+	pointer-events: none;
+	text-align: center;
+	border-radius: 1rem;
+	border: 2px solid rgba(255, 105, 180, 0.5);
+	background: rgba(72, 18, 48, 0.42);
+	box-shadow:
+		0 0 48px rgba(255, 105, 180, 0.4),
+		0 10px 36px rgba(50, 10, 35, 0.45);
+	animation: npf-feature-creep-fly 82.5s ease-in-out forwards;
+}
+
+.npf-feature-creep.is-paused {
+	animation-play-state: paused;
+}
+
+.npf-feature-creep-title {
+	margin: 0 0 0.75rem;
+	font-family: "Titan One", "Manrope", sans-serif;
+	font-size: clamp(1.35rem, 4.5vw, 2.5rem);
+	line-height: 1.15;
+	letter-spacing: -0.02em;
+	color: #fff;
+	text-shadow:
+		0 0 28px rgba(255, 182, 213, 0.95),
+		0 0 56px rgba(255, 105, 180, 0.55),
+		2px 2px 0 #ff69b4,
+		3px 3px 0 #f06292,
+		4px 4px 0 #ec407a,
+		5px 5px 0 #e91e8c,
+		6px 6px 0 #d81b60,
+		7px 7px 0 #c2185b,
+		8px 8px 14px rgba(80, 20, 50, 0.55);
+}
+
+.npf-feature-creep-answer {
+	margin: 0;
+	font-family: "Titan One", "Manrope", sans-serif;
+	font-size: clamp(1.65rem, 5.5vw, 3rem);
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+	color: #ffe4f0;
+	text-shadow:
+		0 0 32px rgba(255, 192, 220, 1),
+		0 0 64px rgba(255, 128, 192, 0.65),
+		2px 2px 0 #ff85c0,
+		3px 3px 0 #ff69b4,
+		4px 4px 0 #ff4081,
+		5px 5px 0 #f50057,
+		6px 6px 0 #e91e63,
+		7px 7px 0 #d81b60,
+		8px 8px 0 #c2185b,
+		10px 10px 18px rgba(90, 15, 55, 0.6);
+}
+
+@keyframes npf-feature-creep-fly {
+	0% {
+		transform: translate(110vw, -50%);
+		opacity: 0;
+	}
+	10% {
+		transform: translate(52vw, -50%);
+		opacity: 1;
+	}
+	18% {
+		transform: translate(12vw, -50%);
+		opacity: 1;
+	}
+	55% {
+		transform: translate(-38vw, -50%);
+		opacity: 1;
+	}
+	75% {
+		transform: translate(-72vw, -50%);
+		opacity: 0.55;
+	}
+	100% {
+		transform: translate(-118vw, -50%);
+		opacity: 0;
+	}
+}
+
+@keyframes npf-feature-creep-fade {
+	0%,
+	100% {
+		opacity: 0;
+	}
+	15%,
+	85% {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.npf-title,
+	.npf-splash-glow,
+	.npf-star,
+	.npf-splash-burst,
+	.npf-splash-burst-rotate,
+	.npf-splash-crowd {
+		animation: none;
+	}
+
+	.npf-splash-burst,
+	.npf-splash-crowd {
+		display: none;
+	}
+
+	.npf-splash-paused-hint {
+		animation: none;
+	}
+
+	.npf-feature-creep {
+		top: 18%;
+		left: 50%;
+		animation: npf-feature-creep-fade 5s ease-in-out forwards;
+		transform: translate(-50%, -50%);
+	}
+
+	.npf-title {
+		filter: none;
+		transform: none;
+	}
+
+	.npf-slide-layer {
+		transition: opacity 200ms ease;
+	}
+
+	.npf-slide-layer.is-inactive {
+		transform: none;
+	}
+}
+
+/* Slide 3 distraction — near-invisible cube drifting across the slide */
+.npf-distraction-cube-track {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.npf-distraction-cube-bob {
+	position: absolute;
+	top: 42%;
+	width: 3.25rem;
+	height: 3.25rem;
+	animation: npf-cube-drift-horizontal 22s linear infinite;
+}
+
+.npf-distraction-cube-scene {
+	width: 100%;
+	height: 100%;
+	perspective: 320px;
+	animation: npf-cube-drift-vertical 3.2s ease-in-out infinite;
+}
+
+.npf-distraction-cube {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transform-style: preserve-3d;
+	transform: rotateX(18deg) rotateY(33deg) rotateZ(33deg);
+}
+
+.npf-distraction-cube-face {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(
+			ellipse 100% 80% at 50% 0%,
+			rgba(79, 184, 178, 0.12) 0%,
+			transparent 55%
+		),
+		var(--bg-base);
+	/* Barely-there edge so motion reads in peripheral vision */
+	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--line) 35%, transparent);
+	backface-visibility: hidden;
+}
+
+.npf-distraction-cube-face--front {
+	transform: translateZ(1.625rem);
+}
+.npf-distraction-cube-face--back {
+	transform: rotateY(180deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--right {
+	transform: rotateY(90deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--left {
+	transform: rotateY(-90deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--top {
+	transform: rotateX(90deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--bottom {
+	transform: rotateX(-90deg) translateZ(1.625rem);
+}
+
+@keyframes npf-cube-drift-horizontal {
+	0% {
+		left: -4rem;
+	}
+	100% {
+		left: calc(100% + 1rem);
+	}
+}
+
+@keyframes npf-cube-drift-vertical {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-18px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.npf-distraction-cube-bob,
+	.npf-distraction-cube-scene {
+		animation: none;
+	}
+
+	.npf-distraction-cube-track {
+		display: none;
+	}
+}
+
+body.npf-presenting > header,
+body.npf-presenting > footer,
+body.npf-presenting .site-footer {
+	display: none;
+}
+
+body.npf-presenting {
+	overflow: hidden;
+}

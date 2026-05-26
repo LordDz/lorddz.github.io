@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { requestNpfFullscreenFromNav } from "./npf/npf-fullscreen";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
@@ -47,6 +48,14 @@ export default function Header() {
 						activeProps={{ className: "nav-link is-active" }}
 					>
 						About
+					</Link>
+					<Link
+						to="/npf"
+						className="nav-link"
+						activeProps={{ className: "nav-link is-active" }}
+						onClick={requestNpfFullscreenFromNav}
+					>
+						NPF
 					</Link>
 					{/* <details className="relative w-full sm:w-auto">
 						<summary className="nav-link list-none cursor-pointer">

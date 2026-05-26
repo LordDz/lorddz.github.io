@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as StackRouteImport } from './routes/stack'
+import { Route as NpfRouteImport } from './routes/npf'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
@@ -26,6 +27,11 @@ const ToolsRoute = ToolsRouteImport.update({
 const StackRoute = StackRouteImport.update({
   id: '/stack',
   path: '/stack',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NpfRoute = NpfRouteImport.update({
+  id: '/npf',
+  path: '/npf',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -62,6 +68,7 @@ const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/npf': typeof NpfRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/npf': typeof NpfRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/npf': typeof NpfRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/npf'
     | '/stack'
     | '/tools'
     | '/demo/table'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/npf'
     | '/stack'
     | '/tools'
     | '/demo/table'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/npf'
     | '/stack'
     | '/tools'
     | '/demo/table'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  NpfRoute: typeof NpfRoute
   StackRoute: typeof StackRoute
   ToolsRoute: typeof ToolsRoute
   DemoTableRoute: typeof DemoTableRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/stack'
       fullPath: '/stack'
       preLoaderRoute: typeof StackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/npf': {
+      id: '/npf'
+      path: '/npf'
+      fullPath: '/npf'
+      preLoaderRoute: typeof NpfRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  NpfRoute: NpfRoute,
   StackRoute: StackRoute,
   ToolsRoute: ToolsRoute,
   DemoTableRoute: DemoTableRoute,
