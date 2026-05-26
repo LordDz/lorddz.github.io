@@ -68,13 +68,16 @@ Added after scaffold: `@tanstack/react-store`, `@tanstack/react-hotkeys`.
 
 ## Deployment (GitHub Pages)
 
-1. Enable GitHub Pages (Actions or branch) for the repository.
-2. Build with the correct base path, for example:  
-   `VITE_BASE_PATH=/website/ npm run build`  
-   if the site is served from `https://<user>.github.io/website/`.
-3. Publish the **`dist/client`** directory (prerendered HTML + assets). TanStack Start’s Node server output under `dist/server` is not used on static hosting.
-4. Prerender is enabled in `vite.config.ts` (`tanstackStart({ prerender: { enabled: true, crawlLinks: true } })`) so routes work without a server.
-5. Workflow: see `.github/workflows/deploy-pages.yml` (optional; set repository variable `VITE_BASE_PATH` if not deploying to site root).
+| Repository | URL | Workflow | Pages source | `VITE_BASE_PATH` |
+| --- | --- | --- | --- | --- |
+| **`LordDz/lorddz.github.io`** | `https://lorddz.github.io/` | `deploy-pages.yml` only | **GitHub Actions** | `/` (repo variable or default) |
+| **`LordDz/website`** (optional) | `https://lorddz.github.io/website/` | `deploy-pages.yml`; optional `deploy-user-site-root.yml` to push `dist/client` into the user-site repo | **GitHub Actions** on each repo | `/website/` |
+
+1. On **`lorddz.github.io`**, set **Settings → Pages → Source** to **GitHub Actions**. Do not use “Deploy from a branch” for this app; the workflow builds and publishes `dist/client`.
+2. Do **not** keep `deploy-user-site-root.yml` on `lorddz.github.io` — it targets another repo and requires `USER_SITE_DEPLOY_TOKEN`.
+3. Build with the correct base path, e.g. `VITE_BASE_PATH=/website/ npm run build` for the project site path.
+4. Publish **`dist/client`** only. TanStack Start’s `dist/server` is not used on static hosting.
+5. Prerender: `tanstackStart({ prerender: { enabled: true, crawlLinks: true } })` in `vite.config.ts`.
 
 ## Architecture notes
 

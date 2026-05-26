@@ -49,38 +49,38 @@ npm run check    # biome check (lint + formatting checks)
 
 ## Deployment (GitHub Pages)
 
-This site is configured for static hosting.
+Static output lives in `dist/client` after `npm run build` (not `dist/server`). Prerender is enabled in `vite.config.ts`.
 
-1. Set base path for your repository site:
-   - Example for `https://lorddz.github.io/website/`:
-   - `VITE_BASE_PATH=/website/`
-2. Build:
-   - `npm run build`
-3. Deploy `dist/client` to Pages (not `dist/server`)
+### `LordDz/lorddz.github.io` (root site — primary)
 
-You can also automate deployment with `.github/workflows/deploy-pages.yml`.
+Live URL: `https://lorddz.github.io/`
 
-### Deploy to root URL (`https://lorddz.github.io/`)
+1. **Settings → Pages → Build and deployment → Source:** **GitHub Actions** (not “Deploy from a branch”). Branch deploy only serves committed source files, not the built app.
+2. **Settings → Actions → General:** allow workflows for this repository.
+3. Optional **Settings → Secrets and variables → Actions → Variables:** `VITE_BASE_PATH` = `/` (the workflow defaults to `/` if unset).
+4. Every push to `master` runs [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml): `npm ci` → `npm run build` → deploy `dist/client` via `actions/deploy-pages`.
 
-This repository is `LordDz/website`, so by default it serves at `/website/`.
-If you want your live site on the root domain, use the included workflow:
-`.github/workflows/deploy-user-site-root.yml`.
+Do **not** add `deploy-user-site-root.yml` to this repo; that workflow is only for a separate source repository (see below).
 
-It builds this repo and pushes `dist/client` to your user-site repository
-(`LordDz/lorddz.github.io`), which controls the root URL.
+### `LordDz/website` (project site at `/website/`)
 
-One-time setup:
+If you maintain a **second** repository for `https://lorddz.github.io/website/`:
 
-1. Create `LordDz/lorddz.github.io` if it does not already exist.
-2. In `LordDz/lorddz.github.io` -> Settings -> Pages:
-   - Source: Deploy from a branch
-   - Branch: `main` (or whichever branch you choose), folder `/ (root)`
-3. In this repo (`LordDz/website`) -> Settings -> Secrets and variables -> Actions:
-   - Add secret `USER_SITE_DEPLOY_TOKEN` (token with **contents: write** on `LordDz/lorddz.github.io`)
-   - Optional variable `USER_SITE_REPO` (default: `LordDz/lorddz.github.io`)
-   - Optional variable `USER_SITE_BRANCH` (default: `main`)
+1. Set repository variable `VITE_BASE_PATH` = `/website/`.
+2. Use the same `deploy-pages.yml` with **Pages source: GitHub Actions**.
+3. To also mirror builds to the root user site, add `.github/workflows/deploy-user-site-root.yml` **only on `LordDz/website`**, with:
+   - Secret `USER_SITE_DEPLOY_TOKEN` (contents write on `LordDz/lorddz.github.io`)
+   - Variable `USER_SITE_BRANCH` = `master` (if the user site uses `master`, not `main`)
 
-After setup, every push to `master` in this repo updates your root site.
+### Manual deploy
+
+```bash
+VITE_BASE_PATH=/ npm run build   # root user site
+# or
+VITE_BASE_PATH=/website/ npm run build   # project site
+```
+
+Upload or publish the contents of `dist/client`.
 
 ## Environment variables
 
