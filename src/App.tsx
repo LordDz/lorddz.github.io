@@ -10,7 +10,6 @@ function App() {
   const screeenshots = [{path: "", alt: "this is a picture 1"}, {path: "", alt: "this is a picture 2"}, {path: "", alt: "this is a picture3"}, {path: "", alt: "this is a picture4"}]
   return (
     <div>
-
     {/* <div className='App-header'>
         <FixedPage containers={containers} screenshots={screeenshots} />
 
