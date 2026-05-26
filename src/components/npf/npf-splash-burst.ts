@@ -1,5 +1,8 @@
-/** Star timing (matches NpfSplashSlide). */
-export const SPLASH_STAR_SPEED_MULTIPLIER = 20 / 1.15;
+/** +30% speed on top of base star timing (matches NpfSplashSlide). */
+const SPLASH_SPEED_BONUS = 1.3;
+
+/** Base timing ×20, then +15% speed → ÷1.15, then +30% speed → ÷1.3 */
+export const SPLASH_STAR_SPEED_MULTIPLIER = 20 / 1.15 / SPLASH_SPEED_BONUS;
 
 /** 40% faster than stars. */
 export const SPLASH_BURST_SPEED_MULTIPLIER = SPLASH_STAR_SPEED_MULTIPLIER / 1.4;
@@ -83,7 +86,7 @@ export function buildTrack2Burst(): SplashBurstParticle[] {
 	return buildRadialBurst({
 		count: 28,
 		emojis: TRACK2_EMOJIS,
-		speedMultiplier: SPLASH_BURST_SPEED_MULTIPLIER,
+		speedMultiplier: SPLASH_BURST_SPEED_MULTIPLIER / SPLASH_SPEED_BONUS,
 		idPrefix: "t2",
 	});
 }

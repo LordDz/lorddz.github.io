@@ -10,7 +10,11 @@ import NpfFeatureCreepBanner from "./NpfFeatureCreepBanner";
 import NpfSplashBurstLayer from "./NpfSplashBurstLayer";
 import NpfSplashConcertCrowd from "./NpfSplashConcertCrowd";
 import NpfSplashMusicAudio from "./NpfSplashMusicAudio";
-import { buildTrack2Burst, buildTrack3Burst } from "./npf-splash-burst";
+import {
+	buildTrack2Burst,
+	buildTrack3Burst,
+	SPLASH_STAR_SPEED_MULTIPLIER,
+} from "./npf-splash-burst";
 import {
 	NPF_SPLASH_FEATURE_CREEP_TRACK_INDEX,
 	NPF_SPLASH_TRACK_CROWD_INDEX,
@@ -19,8 +23,7 @@ import {
 
 const STAR_COUNT = 40;
 const STAR_SIZE_SCALE = 1.75;
-/** Base timing ×20, then +15% speed → ÷1.15 */
-const STAR_SPEED_MULTIPLIER = 20 / 1.15;
+const STAR_SPEED_MULTIPLIER = SPLASH_STAR_SPEED_MULTIPLIER;
 /** Tighter burst so stars stay close to the NPF title */
 const STAR_DISTANCE_BASE_VMIN = 22;
 const STAR_DISTANCE_SPREAD_VMIN = 2.5;

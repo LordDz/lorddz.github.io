@@ -114,6 +114,26 @@
 		var(--bg-base);
 }
 
+.npf-slide-callout {
+	margin-top: 2.5rem;
+	padding: 1rem 1.25rem;
+	border: 1px solid rgba(79, 184, 178, 0.45);
+	border-radius: 0.75rem;
+	background: rgba(79, 184, 178, 0.1);
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--lagoon);
+	text-align: center;
+}
+
+@media (min-width: 640px) {
+	.npf-slide-callout {
+		margin-top: 3rem;
+		font-size: 1.5rem;
+	}
+}
+
 .npf-slide-layer {
 	transition:
 		opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -198,8 +218,8 @@
 
 .npf-splash-burst-rotate {
 	display: inline-block;
-	animation: npf-splash-burst-rotate
-		calc(var(--npf-star-duration, 30s) / 1.4) ease-in-out infinite;
+	animation: npf-splash-burst-rotate calc(var(--npf-star-duration, 30s) / 1.4)
+		ease-in-out infinite;
 	animation-delay: var(--npf-star-delay, 0s);
 }
 
@@ -404,7 +424,7 @@ body:not(.npf-presenting) .npf-splash-crowd {
 	}
 }
 
-/* Slide 3 distraction — near-invisible cube drifting across the slide */
+/* "negativt" slide — near-invisible cube drifting across the slide */
 .npf-distraction-cube-track {
 	position: absolute;
 	inset: 0;
@@ -415,10 +435,11 @@ body:not(.npf-presenting) .npf-splash-crowd {
 
 .npf-distraction-cube-bob {
 	position: absolute;
-	top: 42%;
+	left: var(--cube-start-left, -4rem);
+	top: var(--cube-start-top, 42%);
 	width: 3.25rem;
 	height: 3.25rem;
-	animation: npf-cube-drift-horizontal 22s linear infinite;
+	animation: npf-cube-drift-path var(--cube-path-duration, 22s) linear infinite;
 }
 
 .npf-distraction-cube-scene {
@@ -470,12 +491,14 @@ body:not(.npf-presenting) .npf-splash-crowd {
 	transform: rotateX(-90deg) translateZ(1.625rem);
 }
 
-@keyframes npf-cube-drift-horizontal {
+@keyframes npf-cube-drift-path {
 	0% {
-		left: -4rem;
+		left: var(--cube-start-left, -4rem);
+		top: var(--cube-start-top, 42%);
 	}
 	100% {
-		left: calc(100% + 1rem);
+		left: var(--cube-end-left, calc(100% + 1rem));
+		top: var(--cube-end-top, 42%);
 	}
 }
 

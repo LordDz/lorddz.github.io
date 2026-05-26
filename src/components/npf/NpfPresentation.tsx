@@ -1,6 +1,7 @@
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import { useCallback, useEffect, useState } from "react";
 import { npfContentSlides, npfSlideCount } from "#/data/npf-slides";
+import { useHorizontalSwipe } from "#/hooks/useHorizontalSwipe";
 import NpfContentSlide from "./NpfContentSlide";
 import NpfSpeakerNotes from "./NpfSpeakerNotes";
 import NpfSplashSlide from "./NpfSplashSlide";
@@ -56,6 +57,12 @@ export default function NpfPresentation() {
 	const goPrev = useCallback(() => {
 		setSlideIndex((i) => Math.max(i - 1, 0));
 	}, []);
+
+	const swipeHandlers = useHorizontalSwipe({
+		onSwipeLeft: goNext,
+		onSwipeRight: goPrev,
+		enabled: npfSlideCount > 1,
+	});
 
 	const toggleNotes = useCallback(() => {
 		if (isSplash) {
@@ -120,7 +127,7 @@ export default function NpfPresentation() {
 
 	return (
 		<div className="npf-deck relative min-h-dvh w-full overflow-hidden bg-[var(--bg-base)]">
-			<div className="relative min-h-dvh w-full">
+			<div className="relative min-h-dvh w-full touch-pan-y" {...swipeHandlers}>
 				<div
 					className={`npf-slide-layer absolute inset-0 ${slideIndex === 0 ? "is-active" : "is-inactive"}`}
 					aria-hidden={slideIndex !== 0}

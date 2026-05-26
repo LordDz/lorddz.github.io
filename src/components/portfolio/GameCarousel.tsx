@@ -3,6 +3,7 @@ import { useSelector } from "@tanstack/react-store";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { portfolioGames } from "#/data/portfolio";
+import { useHorizontalSwipe } from "#/hooks/useHorizontalSwipe";
 import {
 	carouselNext,
 	carouselPrev,
@@ -11,6 +12,11 @@ import {
 
 export default function GameCarousel() {
 	const gameIndex = useSelector(gameCarouselStore, (state) => state.gameIndex);
+	const swipeHandlers = useHorizontalSwipe({
+		onSwipeLeft: carouselNext,
+		onSwipeRight: carouselPrev,
+		enabled: portfolioGames.length > 1,
+	});
 
 	useHotkeys(
 		[
@@ -31,7 +37,10 @@ export default function GameCarousel() {
 	const active = portfolioGames[gameIndex];
 
 	return (
-		<section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-5 py-8 sm:px-8 sm:py-10">
+		<section
+			className="island-shell rise-in relative touch-pan-y overflow-hidden rounded-[2rem] px-5 py-8 sm:px-8 sm:py-10"
+			{...swipeHandlers}
+		>
 			<div
 				className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-90 ${active?.accent ?? "from-[#173a40] to-[#328f97]"}`}
 			/>
@@ -49,7 +58,10 @@ export default function GameCarousel() {
 							Engine: {active?.engine}
 						</p>
 					</div>
-					<p className="text-xs text-white/75">
+					<p className="text-xs text-white/75 sm:hidden">
+						Tip: swipe left or right
+					</p>
+					<p className="hidden text-xs text-white/75 sm:block">
 						Tip: use{" "}
 						<kbd className="rounded bg-black/25 px-1.5 py-0.5 font-mono text-[11px]">
 							←
