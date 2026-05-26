@@ -1,20 +1,8 @@
-export const ENTITY_RENAMES: Record<string, string> = {
-	flagsoyka_1: "capture_ring",
-	gothic_ruin: "gothic_ruin1",
-	gothic_ruin002: "gothic_ruin2",
-	imp_building_001: "imp_building_factory",
-	imp_building2: "imp_building_desert1",
-	imp_building3: "imp_building_desert2",
-	imp_building4: "imp_building_desert3",
-	imp_building5: "imp_building_desert4",
-	imp_building6: "imp_building_desert5",
-	imp_building7: "imp_building_desert6",
-	imp_building8: "imp_building_desert7",
-	imp_bunker07_new: "imp_depot_octogon",
-	imp_depot_octogon: "imp_bunker_helipad",
-	imperialrelaytower: "imp_relay_tower",
-	radio_bunker: "imp_garage_small",
-};
+import { DEFAULT_ENTITY_RENAMES } from "#/lib/entityRename/defaultEntityRenames";
+
+export { DEFAULT_ENTITY_RENAMES };
+/** @deprecated Use DEFAULT_ENTITY_RENAMES */
+export const ENTITY_RENAMES = DEFAULT_ENTITY_RENAMES;
 
 type EntityChange = {
 	from: string;
@@ -23,7 +11,10 @@ type EntityChange = {
 	lineNumbers: number[];
 };
 
-export function applyEntityRenames(text: string) {
+export function applyEntityRenames(
+	text: string,
+	renames: Record<string, string> = DEFAULT_ENTITY_RENAMES,
+) {
 	const lineEnding = text.includes("\r\n") ? "\r\n" : "\n";
 	let renamedCount = 0;
 	const countsByPair = new Map<string, EntityChange>();
@@ -33,7 +24,7 @@ export function applyEntityRenames(text: string) {
 		if (!match) return line;
 
 		const [, prefix, entityName, suffix] = match;
-		const replacement = ENTITY_RENAMES[entityName];
+		const replacement = renames[entityName];
 		if (!replacement) return line;
 
 		renamedCount += 1;
