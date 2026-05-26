@@ -1,0 +1,269 @@
+@import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
+
+.npf-deck {
+	--npf-orange: #ff8c1a;
+	--npf-yellow: #ffd54a;
+	--npf-deep: #c44f00;
+	--npf-shadow: #8a3200;
+	font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+.npf-splash-bg {
+	background: radial-gradient(
+		ellipse 80% 70% at 50% 45%,
+		#ffd54a 0%,
+		#ff9f1a 35%,
+		#e86a00 65%,
+		#b84a00 100%
+	);
+}
+
+.npf-splash-glow {
+	position: absolute;
+	inset: -20%;
+	background: radial-gradient(
+		circle at 50% 50%,
+		rgba(255, 240, 150, 0.55) 0%,
+		rgba(255, 160, 40, 0.2) 40%,
+		transparent 70%
+	);
+	pointer-events: none;
+	animation: npf-glow-pulse 2.2s ease-in-out infinite;
+}
+
+.npf-title {
+	font-family: "Titan One", "Manrope", sans-serif;
+	font-size: clamp(5rem, 22vw, 14rem);
+	line-height: 0.9;
+	letter-spacing: -0.04em;
+	color: #fff;
+	text-shadow:
+		0 0 40px rgba(255, 220, 100, 0.9),
+		0 0 80px rgba(255, 140, 30, 0.6),
+		2px 2px 0 var(--npf-orange),
+		3px 3px 0 var(--npf-orange),
+		4px 4px 0 #f57c00,
+		5px 5px 0 #ef6c00,
+		6px 6px 0 #e65100,
+		7px 7px 0 #d84315,
+		8px 8px 0 #bf360c,
+		9px 9px 0 #a33000,
+		10px 10px 0 var(--npf-shadow),
+		12px 14px 24px rgba(80, 30, 0, 0.55);
+	animation: npf-flash 1.4s ease-in-out infinite;
+}
+
+.npf-title-wrap {
+	filter: drop-shadow(0 0 30px rgba(255, 200, 80, 0.8));
+}
+
+.npf-star {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	font-size: var(--npf-star-size, 1.25rem);
+	color: #fff9c4;
+	text-shadow:
+		0 0 8px #ffeb3b,
+		0 0 16px #ff9800;
+	opacity: 0;
+	pointer-events: none;
+	animation: npf-star-burst var(--npf-star-duration, 2.4s) ease-out infinite;
+	animation-delay: var(--npf-star-delay, 0s);
+	transform: translate(-50%, -50%);
+}
+
+.npf-content-bg {
+	background:
+		radial-gradient(
+			ellipse 100% 80% at 50% 0%,
+			rgba(79, 184, 178, 0.12) 0%,
+			transparent 55%
+		),
+		var(--bg-base);
+}
+
+.npf-slide-layer {
+	transition:
+		opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+		transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.npf-slide-layer.is-active {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.npf-slide-layer.is-inactive {
+	opacity: 0;
+	transform: translateY(8px);
+	pointer-events: none;
+}
+
+@keyframes npf-flash {
+	0%,
+	100% {
+		filter: brightness(1) saturate(1);
+		transform: scale(1);
+	}
+	50% {
+		filter: brightness(1.25) saturate(1.15);
+		transform: scale(1.02);
+	}
+}
+
+@keyframes npf-glow-pulse {
+	0%,
+	100% {
+		opacity: 0.7;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.05);
+	}
+}
+
+@keyframes npf-star-burst {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(var(--npf-star-angle, 0deg))
+			translateY(0) scale(0.3);
+	}
+	15% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(var(--npf-star-angle, 0deg))
+			translateY(calc(-1 * var(--npf-star-distance, 180px))) scale(0.6);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.npf-title,
+	.npf-splash-glow,
+	.npf-star {
+		animation: none;
+	}
+
+	.npf-title {
+		filter: none;
+		transform: none;
+	}
+
+	.npf-slide-layer {
+		transition: opacity 200ms ease;
+	}
+
+	.npf-slide-layer.is-inactive {
+		transform: none;
+	}
+}
+
+/* Slide 3 distraction — near-invisible cube drifting across the slide */
+.npf-distraction-cube-track {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.npf-distraction-cube-bob {
+	position: absolute;
+	top: 42%;
+	width: 3.25rem;
+	height: 3.25rem;
+	animation: npf-cube-drift-horizontal 22s linear infinite;
+}
+
+.npf-distraction-cube-scene {
+	width: 100%;
+	height: 100%;
+	perspective: 320px;
+	animation: npf-cube-drift-vertical 3.2s ease-in-out infinite;
+}
+
+.npf-distraction-cube {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transform-style: preserve-3d;
+	transform: rotateX(18deg) rotateY(33deg) rotateZ(33deg);
+}
+
+.npf-distraction-cube-face {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(
+			ellipse 100% 80% at 50% 0%,
+			rgba(79, 184, 178, 0.12) 0%,
+			transparent 55%
+		),
+		var(--bg-base);
+	/* Barely-there edge so motion reads in peripheral vision */
+	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--line) 35%, transparent);
+	backface-visibility: hidden;
+}
+
+.npf-distraction-cube-face--front {
+	transform: translateZ(1.625rem);
+}
+.npf-distraction-cube-face--back {
+	transform: rotateY(180deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--right {
+	transform: rotateY(90deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--left {
+	transform: rotateY(-90deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--top {
+	transform: rotateX(90deg) translateZ(1.625rem);
+}
+.npf-distraction-cube-face--bottom {
+	transform: rotateX(-90deg) translateZ(1.625rem);
+}
+
+@keyframes npf-cube-drift-horizontal {
+	0% {
+		left: -4rem;
+	}
+	100% {
+		left: calc(100% + 1rem);
+	}
+}
+
+@keyframes npf-cube-drift-vertical {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-18px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.npf-distraction-cube-bob,
+	.npf-distraction-cube-scene {
+		animation: none;
+	}
+
+	.npf-distraction-cube-track {
+		display: none;
+	}
+}
+
+body.npf-presenting > header,
+body.npf-presenting > footer,
+body.npf-presenting .site-footer {
+	display: none;
+}
+
+body.npf-presenting {
+	overflow: hidden;
+}
