@@ -4,6 +4,7 @@ import type { CategoryId, WordLength } from "#/data/awesome-word/types";
 
 const STORAGE_KEY = "awesome-word-state";
 const MAX_SCREENSHOTS = 15;
+export const WINS_TO_LEVEL_UP = 5;
 
 export type ScreenshotEntry = {
 	id: string;
@@ -18,6 +19,7 @@ export type AwesomeWordState = {
 	score: number;
 	streak: number;
 	wordLength: WordLength;
+	winsAtLength: number;
 	categoryId: CategoryId | null;
 	screenshots: ScreenshotEntry[];
 };
@@ -26,6 +28,7 @@ const defaultState: AwesomeWordState = {
 	score: 0,
 	streak: 0,
 	wordLength: 5,
+	winsAtLength: 0,
 	categoryId: null,
 	screenshots: [],
 };
@@ -69,6 +72,8 @@ function readStoredState(): AwesomeWordState | null {
 			score: typeof data.score === "number" ? data.score : 0,
 			streak: typeof data.streak === "number" ? data.streak : 0,
 			wordLength: isWordLength(data.wordLength) ? data.wordLength : 5,
+			winsAtLength:
+				typeof data.winsAtLength === "number" ? data.winsAtLength : 0,
 			categoryId:
 				data.categoryId === null
 					? null
@@ -111,11 +116,16 @@ export function setCategory(categoryId: CategoryId) {
 export function recordWin(attempts: number, wordLength: WordLength) {
 	awesomeWordStore.setState((prev) => {
 		const points = Math.max(1, (7 - attempts) * wordLength);
+		const nextWins = prev.winsAtLength + 1;
+		const leveledUp = nextWins >= WINS_TO_LEVEL_UP && prev.wordLength < 7;
 		const next: AwesomeWordState = {
 			...prev,
 			score: prev.score + points,
 			streak: prev.streak + 1,
-			wordLength: wordLength >= 7 ? 7 : ((wordLength + 1) as WordLength),
+			winsAtLength: leveledUp ? 0 : nextWins,
+			wordLength: leveledUp
+				? ((prev.wordLength + 1) as WordLength)
+				: prev.wordLength,
 		};
 		persistAwesomeWordState(next);
 		return next;

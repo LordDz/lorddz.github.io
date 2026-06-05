@@ -64,6 +64,7 @@ export default function AwesomeWordGame() {
 	);
 	const [shakingRow, setShakingRow] = useState<number | null>(null);
 	const [isAnimating, setIsAnimating] = useState(false);
+	const [isFalling, setIsFalling] = useState(false);
 	const [message, setMessage] = useState("");
 	const [debugWordRevealed, setDebugWordRevealed] = useState(false);
 	const boardRef = useRef<HTMLDivElement>(null);
@@ -84,6 +85,7 @@ export default function AwesomeWordGame() {
 		lockedGreens,
 		round.currentInput,
 	);
+	const inputLocked = isAnimating || isFalling;
 	const submitLabel =
 		rowComplete &&
 		storeState.categoryId &&
@@ -109,13 +111,20 @@ export default function AwesomeWordGame() {
 	const handleCategorySelect = (catId: CategoryId) => {
 		setCategory(catId);
 		awesomeWordStore.setState((prev) => {
-			const next = { ...prev, categoryId: catId, wordLength: 5 as WordLength };
+			const next = {
+				...prev,
+				categoryId: catId,
+				wordLength: 5 as WordLength,
+				winsAtLength: 0,
+			};
 			persistAwesomeWordState(next);
 			return next;
 		});
 		startRound(catId, 5);
 		setPhase("playing");
 	};
+
+	const FALL_ANIMATION_MS = 1200;
 
 	const finishRound = useCallback(
 		async (
@@ -133,12 +142,14 @@ export default function AwesomeWordGame() {
 			});
 
 			if (won) {
-				recordWin(attempts, wordLength);
-				const newLength = Math.min(7, wordLength + 1) as WordLength;
-				setMessage("Rätt! Nästa ord…");
+				setIsFalling(true);
 				setTimeout(() => {
-					startRound(catId, newLength, [target]);
-				}, 1500);
+					recordWin(attempts, wordLength);
+					const nextLength = awesomeWordStore.state.wordLength;
+					startRound(catId, nextLength, [target]);
+					setIsFalling(false);
+					setIsAnimating(false);
+				}, FALL_ANIMATION_MS);
 			} else {
 				recordLoss();
 				alert(`Aj, tråkigt, ordet var: ${target}`);
@@ -150,7 +161,7 @@ export default function AwesomeWordGame() {
 
 	const submitGuess = useCallback(() => {
 		if (
-			isAnimating ||
+			inputLocked ||
 			phase !== "playing" ||
 			!category ||
 			!storeState.categoryId
@@ -187,15 +198,17 @@ export default function AwesomeWordGame() {
 		}));
 
 		setTimeout(() => {
-			setIsAnimating(false);
 			if (won) {
 				void finishRound(true, attempts, target, catId);
-			} else if (lost) {
-				void finishRound(false, attempts, target, catId);
+			} else {
+				setIsAnimating(false);
+				if (lost) {
+					void finishRound(false, attempts, target, catId);
+				}
 			}
 		}, 600);
 	}, [
-		isAnimating,
+		inputLocked,
 		phase,
 		category,
 		storeState.categoryId,
@@ -207,7 +220,7 @@ export default function AwesomeWordGame() {
 
 	const handleKey = useCallback(
 		(key: string) => {
-			if (isAnimating || phase !== "playing") return;
+			if (inputLocked || phase !== "playing") return;
 
 			const editableCount = wordLength - Object.keys(lockedGreens).length;
 			if (round.currentInput.length >= editableCount) return;
@@ -218,20 +231,20 @@ export default function AwesomeWordGame() {
 			}));
 			setMessage("");
 		},
-		[isAnimating, phase, wordLength, lockedGreens, round.currentInput.length],
+		[inputLocked, phase, wordLength, lockedGreens, round.currentInput.length],
 	);
 
 	const handleBackspace = useCallback(() => {
-		if (isAnimating || phase !== "playing") return;
+		if (inputLocked || phase !== "playing") return;
 		setRound((prev) => ({
 			...prev,
 			currentInput: prev.currentInput.slice(0, -1),
 		}));
-	}, [isAnimating, phase]);
+	}, [inputLocked, phase]);
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
-			if (phase !== "playing" || isAnimating) return;
+			if (phase !== "playing" || inputLocked) return;
 
 			if (e.key === "Enter") {
 				e.preventDefault();
@@ -258,7 +271,7 @@ export default function AwesomeWordGame() {
 
 		window.addEventListener("keydown", onKeyDown);
 		return () => window.removeEventListener("keydown", onKeyDown);
-	}, [phase, isAnimating, category, submitGuess, handleBackspace, handleKey]);
+	}, [phase, inputLocked, category, submitGuess, handleBackspace, handleKey]);
 
 	return (
 		<div className="awesome-word">
@@ -282,6 +295,7 @@ export default function AwesomeWordGame() {
 							lockedGreens={lockedGreens}
 							currentRowIndex={round.currentRowIndex}
 							shakingRow={shakingRow}
+							isFalling={isFalling}
 						/>
 						{message && <p className="awesome-word-message">{message}</p>}
 						{category && (
@@ -293,7 +307,7 @@ export default function AwesomeWordGame() {
 								onKey={handleKey}
 								onEnter={submitGuess}
 								onBackspace={handleBackspace}
-								disabled={isAnimating}
+								disabled={inputLocked}
 							/>
 						)}
 						<button

@@ -18,7 +18,7 @@ type GameKeyboardProps = {
 };
 
 function keyClass(state: KeyboardLetterState | undefined): string {
-	const classes = ["awesome-word-key"];
+	const classes = ["awesome-word-key", "is-letter"];
 	if (state === "correct") classes.push("is-correct");
 	else if (state === "present") classes.push("is-present");
 	else if (state === "absent") classes.push("is-absent");

@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import type {
 	GuessRow,
 	LockedGreens,
@@ -15,7 +17,17 @@ type GameBoardProps = {
 	lockedGreens: LockedGreens;
 	currentRowIndex: number;
 	shakingRow: number | null;
+	isFalling: boolean;
 };
+
+function fallStyle(row: number, col: number): CSSProperties {
+	const seed = row * 11 + col * 7;
+	return {
+		"--aw-fall-x": `${((seed % 9) - 4) * 6}px`,
+		"--aw-fall-rot": `${((seed % 7) - 3) * 14}deg`,
+		"--aw-fall-delay": `${(seed % 5) * 40}ms`,
+	} as CSSProperties;
+}
 
 function tileClass(state: string, extras: string[] = []): string {
 	const classes = ["awesome-word-tile", ...extras];
@@ -33,11 +45,15 @@ export default function GameBoard({
 	lockedGreens,
 	currentRowIndex,
 	shakingRow,
+	isFalling,
 }: GameBoardProps) {
 	const currentRow = buildCurrentRow(wordLength, lockedGreens, currentInput);
+	const boardClass = isFalling
+		? "awesome-word-board is-falling"
+		: "awesome-word-board";
 
 	return (
-		<div className="awesome-word-board">
+		<div className={boardClass}>
 			{Array.from({ length: MAX_GUESSES }, (_, rowIdx) => {
 				const isCurrent = rowIdx === currentRowIndex;
 				const isPast = rowIdx < currentRowIndex;
@@ -66,9 +82,16 @@ export default function GameBoard({
 							const extras: string[] = [];
 							if (isCurrent) extras.push("is-current");
 							if (isLockedGreen) extras.push("is-locked");
+							if (isFalling && letter) extras.push("is-falling");
 
 							return (
-								<div key={`col-${colIdx}`} className={tileClass(state, extras)}>
+								<div
+									key={`col-${colIdx}`}
+									className={tileClass(state, extras)}
+									style={
+										isFalling && letter ? fallStyle(rowIdx, colIdx) : undefined
+									}
+								>
 									{letter}
 								</div>
 							);
