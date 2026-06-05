@@ -10,7 +10,7 @@ export const Route = createFileRoute("/games/awesome-word")({
 
 function AwesomeWordRoute() {
 	return (
-		<main className="page-wrap px-4 pb-12 pt-6">
+		<main className="awesome-word-page page-wrap px-0 pb-12 pt-0 sm:px-4 sm:pt-6">
 			<AwesomeWordGame />
 		</main>
 	);
