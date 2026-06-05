@@ -1,0 +1,40 @@
+import type { WordListByLength } from "#/data/awesome-word/types";
+
+export const wordsScience: WordListByLength = {
+	5: [
+		"LASER",
+		"FOTON",
+		"KVARK",
+		"GENOM",
+		"VIRUS",
+		"CELLA",
+		"SYREN",
+		"PLANT",
+		"VÄRME",
+		"KRAFT",
+	],
+	6: [
+		"ENERGI",
+		"PLASMA",
+		"PROTON",
+		"GRAVIT",
+		"ATOMER",
+		"KVANTA",
+		"SYRENT",
+		"NEUTRO",
+		"FOTONS",
+		"MOLEKY",
+	],
+	7: [
+		"NEUTRON",
+		"PROTEIN",
+		"KVANTUM",
+		"MOLEKYL",
+		"GRAVITA",
+		"ISOTOPE",
+		"FOTONER",
+		"SYRENER",
+		"ATOMKRA",
+		"ELEMENT",
+	],
+};

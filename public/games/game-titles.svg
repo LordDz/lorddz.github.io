@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" role="img" aria-label="Game Titles">
+  <defs>
+    <linearGradient id="game-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c1d95"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="250" fill="url(#game-bg)"/>
+  <rect x="100" y="70" width="200" height="120" rx="12" fill="#1e1b4b" stroke="#a78bfa" stroke-width="3"/>
+  <circle cx="140" cy="110" r="12" fill="#f472b6"/>
+  <circle cx="180" cy="110" r="12" fill="#34d399"/>
+  <circle cx="220" cy="110" r="12" fill="#fbbf24"/>
+  <circle cx="260" cy="110" r="12" fill="#60a5fa"/>
+  <rect x="130" y="145" width="140" height="8" rx="4" fill="#6366f1"/>
+  <text x="200" y="210" text-anchor="middle" fill="#ffffff" font-family="system-ui,sans-serif" font-size="24" font-weight="700">Game Titles</text>
+</svg>

@@ -1,0 +1,40 @@
+import type { WordListByLength } from "#/data/awesome-word/types";
+
+export const wordsGameTitles: WordListByLength = {
+	5: [
+		"SONIC",
+		"METRO",
+		"WORLD",
+		"SPORE",
+		"TERRA",
+		"ZELDA",
+		"CIVIL",
+		"MAFIA",
+		"CRAFT",
+		"WORMS",
+	],
+	6: [
+		"PORTAL",
+		"TETRIS",
+		"ROBLOX",
+		"PACMAN",
+		"SKYRIM",
+		"ANIMAL",
+		"FACTOR",
+		"MINECR",
+		"STARDE",
+		"VALHEI",
+	],
+	7: [
+		"STARDEW",
+		"VALHEIM",
+		"MINECRA",
+		"FORTNIT",
+		"OVERWAT",
+		"WARCRAF",
+		"HALFLIF",
+		"BIOSHOC",
+		"NINTEND",
+		"ELDENRI",
+	],
+};

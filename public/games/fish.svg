@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" role="img" aria-label="Fish species">
+  <defs>
+    <linearGradient id="fish-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c4a6e"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="250" fill="url(#fish-bg)"/>
+  <ellipse cx="200" cy="120" rx="90" ry="45" fill="#38bdf8"/>
+  <polygon points="110,120 60,90 60,150" fill="#38bdf8"/>
+  <circle cx="250" cy="105" r="8" fill="#0c4a6e"/>
+  <path d="M160 130 Q200 150 240 130" fill="none" stroke="#0c4a6e" stroke-width="2"/>
+  <text x="200" y="210" text-anchor="middle" fill="#ffffff" font-family="system-ui,sans-serif" font-size="24" font-weight="700">Fish species</text>
+</svg>
