@@ -42,6 +42,13 @@ export default function Header() {
 					>
 						Games
 					</Link>
+					<Link
+						to="/gallery"
+						className="nav-link"
+						activeProps={{ className: "nav-link is-active" }}
+					>
+						Gallery
+					</Link>
 					{/* <Link
 						to="/stack"
 						className="nav-link"

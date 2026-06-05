@@ -5,15 +5,19 @@ import CategoryPicker from "#/components/games/awesome-word/CategoryPicker";
 import GameBoard from "#/components/games/awesome-word/GameBoard";
 import GameKeyboard from "#/components/games/awesome-word/GameKeyboard";
 import {
-	buildCurrentRow,
+	clearLetterAt,
+	createInitialRow,
+	deleteLetter,
 	evaluateGuess,
 	type GuessRow,
 	getKeyboardState,
 	getLockedGreens,
+	insertLetter,
 	isRowComplete,
+	rowToString,
+	setLetterAt,
 } from "#/components/games/awesome-word/gameLogic";
 import ScoreBar from "#/components/games/awesome-word/ScoreBar";
-import ScreenshotGallery from "#/components/games/awesome-word/ScreenshotGallery";
 import { captureGameScreenshot } from "#/components/games/awesome-word/screenshot";
 import {
 	getCategoryById,
@@ -35,9 +39,13 @@ type GamePhase = "category" | "playing";
 type RoundState = {
 	target: string;
 	guesses: GuessRow[];
-	currentInput: string;
+	currentRow: string[];
 	currentRowIndex: number;
 };
+
+function emptyRow(wordLength: WordLength): string[] {
+	return Array.from({ length: wordLength }, () => "");
+}
 
 function createRound(
 	categoryId: CategoryId,
@@ -46,7 +54,7 @@ function createRound(
 	return {
 		target: pickRandomWord(categoryId, wordLength),
 		guesses: [],
-		currentInput: "",
+		currentRow: emptyRow(wordLength),
 		currentRowIndex: 0,
 	};
 }
@@ -54,11 +62,14 @@ function createRound(
 export default function AwesomeWordGame() {
 	const storeState = useStore(awesomeWordStore);
 	const [phase, setPhase] = useState<GamePhase>("category");
-	const [round, setRound] = useState<RoundState>(() => createRound("science", 5));
+	const [round, setRound] = useState<RoundState>(() =>
+		createRound("science", 5),
+	);
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [isFalling, setIsFalling] = useState(false);
 	const [message, setMessage] = useState("");
 	const [debugWordRevealed, setDebugWordRevealed] = useState(false);
+	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 	const boardRef = useRef<HTMLDivElement>(null);
 
 	const category = storeState.categoryId
@@ -67,11 +78,7 @@ export default function AwesomeWordGame() {
 	const wordLength = storeState.wordLength;
 	const lockedGreens = getLockedGreens(round.guesses);
 	const keyboardState = getKeyboardState(round.guesses);
-	const rowComplete = isRowComplete(
-		wordLength,
-		lockedGreens,
-		round.currentInput,
-	);
+	const rowComplete = isRowComplete(round.currentRow);
 	const inputLocked = isAnimating || isFalling;
 
 	const startRound = useCallback(
@@ -79,11 +86,12 @@ export default function AwesomeWordGame() {
 			setRound({
 				target: pickRandomWord(catId, length, exclude),
 				guesses: [],
-				currentInput: "",
+				currentRow: emptyRow(length),
 				currentRowIndex: 0,
 			});
 			setMessage("");
 			setDebugWordRevealed(false);
+			setSelectedIndex(null);
 		},
 		[],
 	);
@@ -148,8 +156,8 @@ export default function AwesomeWordGame() {
 		)
 			return;
 
-		const row = buildCurrentRow(wordLength, lockedGreens, round.currentInput);
-		if (!isRowComplete(wordLength, lockedGreens, round.currentInput)) return;
+		const row = rowToString(round.currentRow);
+		if (!isRowComplete(round.currentRow)) return;
 
 		setIsAnimating(true);
 		const states = evaluateGuess(row, round.target);
@@ -164,9 +172,10 @@ export default function AwesomeWordGame() {
 		setRound((prev) => ({
 			...prev,
 			guesses: newGuesses,
-			currentInput: "",
+			currentRow: createInitialRow(wordLength, getLockedGreens(newGuesses)),
 			currentRowIndex: prev.currentRowIndex + 1,
 		}));
+		setSelectedIndex(null);
 
 		setTimeout(() => {
 			if (won) {
@@ -184,7 +193,6 @@ export default function AwesomeWordGame() {
 		category,
 		storeState.categoryId,
 		wordLength,
-		lockedGreens,
 		round,
 		finishRound,
 	]);
@@ -193,25 +201,45 @@ export default function AwesomeWordGame() {
 		(key: string) => {
 			if (inputLocked || phase !== "playing") return;
 
-			const editableCount = wordLength - Object.keys(lockedGreens).length;
-			if (round.currentInput.length >= editableCount) return;
-
-			setRound((prev) => ({
-				...prev,
-				currentInput: prev.currentInput + key,
-			}));
+			setRound((prev) => {
+				if (selectedIndex !== null) {
+					return {
+						...prev,
+						currentRow: setLetterAt(prev.currentRow, selectedIndex, key),
+					};
+				}
+				if (!prev.currentRow.some((char) => char === "")) return prev;
+				return {
+					...prev,
+					currentRow: insertLetter(prev.currentRow, key),
+				};
+			});
+			if (selectedIndex !== null) {
+				setSelectedIndex(null);
+			}
 			setMessage("");
 		},
-		[inputLocked, phase, wordLength, lockedGreens, round.currentInput.length],
+		[inputLocked, phase, selectedIndex],
 	);
 
 	const handleBackspace = useCallback(() => {
 		if (inputLocked || phase !== "playing") return;
 		setRound((prev) => ({
 			...prev,
-			currentInput: prev.currentInput.slice(0, -1),
+			currentRow:
+				selectedIndex !== null
+					? clearLetterAt(prev.currentRow, selectedIndex)
+					: deleteLetter(prev.currentRow),
 		}));
-	}, [inputLocked, phase]);
+	}, [inputLocked, phase, selectedIndex]);
+
+	const handleSelectTile = useCallback(
+		(index: number) => {
+			if (inputLocked || phase !== "playing") return;
+			setSelectedIndex(index);
+		},
+		[inputLocked, phase],
+	);
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
@@ -262,10 +290,13 @@ export default function AwesomeWordGame() {
 						<GameBoard
 							wordLength={wordLength}
 							guesses={round.guesses}
-							currentInput={round.currentInput}
+							currentRow={round.currentRow}
 							lockedGreens={lockedGreens}
 							currentRowIndex={round.currentRowIndex}
 							isFalling={isFalling}
+							selectedIndex={selectedIndex}
+							onSelectTile={handleSelectTile}
+							inputLocked={inputLocked}
 						/>
 						{message && <p className="awesome-word-message">{message}</p>}
 						{category && (
@@ -301,7 +332,6 @@ export default function AwesomeWordGame() {
 					</>
 				)}
 			</div>
-			<ScreenshotGallery />
 		</div>
 	);
 }

@@ -1,7 +1,5 @@
 import {
-	getAllKeyboardLetters,
-	getKeyboardRows,
-	getVisibleKeyboardLetters,
+	getActiveAndAbsentKeyboardLetters,
 	type KeyboardLetterState,
 } from "#/components/games/awesome-word/gameLogic";
 import type { CategoryLanguage } from "#/data/awesome-word/types";
@@ -24,6 +22,29 @@ function keyClass(state: KeyboardLetterState | undefined): string {
 	return classes.join(" ");
 }
 
+function KeyButton({
+	letter,
+	keyboardState,
+	onKey,
+	disabled,
+}: {
+	letter: string;
+	keyboardState: Map<string, KeyboardLetterState>;
+	onKey: (key: string) => void;
+	disabled: boolean;
+}) {
+	return (
+		<button
+			type="button"
+			className={keyClass(keyboardState.get(letter))}
+			onClick={() => onKey(letter)}
+			disabled={disabled}
+		>
+			{letter}
+		</button>
+	);
+}
+
 export default function GameKeyboard({
 	language,
 	keyboardState,
@@ -33,32 +54,58 @@ export default function GameKeyboard({
 	onBackspace,
 	disabled = false,
 }: GameKeyboardProps) {
-	const allLetters = getAllKeyboardLetters(language);
-	const visibleLetters = new Set(
-		getVisibleKeyboardLetters(keyboardState, allLetters),
+	const { activeRows, absentRows } = getActiveAndAbsentKeyboardLetters(
+		language,
+		keyboardState,
 	);
-	const rows = getKeyboardRows(language);
+	const hasAbsentKeys = absentRows.some((row) =>
+		row.some((slot) => slot !== null),
+	);
 	const submitClasses = ["awesome-word-key", "is-submit"].join(" ");
 
 	return (
 		<div className="awesome-word-keyboard">
-			{rows.map((row) => (
+			{activeRows.map((row) => (
 				<div key={row.join("")} className="awesome-word-keyboard-row">
-					{row
-						.filter((letter) => visibleLetters.has(letter))
-						.map((letter) => (
-							<button
-								key={letter}
-								type="button"
-								className={keyClass(keyboardState.get(letter))}
-								onClick={() => onKey(letter)}
-								disabled={disabled}
-							>
-								{letter}
-							</button>
-						))}
+					{row.map((letter) => (
+						<KeyButton
+							key={letter}
+							letter={letter}
+							keyboardState={keyboardState}
+							onKey={onKey}
+							disabled={disabled}
+						/>
+					))}
 				</div>
 			))}
+			{hasAbsentKeys && (
+				<div className="awesome-word-keyboard-absent">
+					{absentRows.map((row, rowIdx) => (
+						<div
+							key={`absent-row-${rowIdx}`}
+							className="awesome-word-keyboard-row is-absent-row"
+						>
+							{row.map((letter, colIdx) =>
+								letter ? (
+									<KeyButton
+										key={letter}
+										letter={letter}
+										keyboardState={keyboardState}
+										onKey={onKey}
+										disabled={disabled}
+									/>
+								) : (
+									<span
+										key={`absent-spacer-${rowIdx}-${colIdx}`}
+										className="awesome-word-key-spacer"
+										aria-hidden
+									/>
+								),
+							)}
+						</div>
+					))}
+				</div>
+			)}
 			<div className="awesome-word-keyboard-row is-actions">
 				<button
 					type="button"

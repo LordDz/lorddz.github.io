@@ -13,10 +13,13 @@ import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as NpfRouteImport } from './routes/npf'
 import { Route as GamesRouteImport } from './routes/games'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesIndexRouteImport } from './routes/games/index'
+import { Route as GalleryIndexRouteImport } from './routes/gallery/index'
 import { Route as GamesAwesomeWordRouteImport } from './routes/games/awesome-word'
+import { Route as GalleryCategoryIdRouteImport } from './routes/gallery/$categoryId'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
@@ -42,6 +45,11 @@ const GamesRoute = GamesRouteImport.update({
   path: '/games',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -57,10 +65,20 @@ const GamesIndexRoute = GamesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => GamesRoute,
 } as any)
+const GalleryIndexRoute = GalleryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GalleryRoute,
+} as any)
 const GamesAwesomeWordRoute = GamesAwesomeWordRouteImport.update({
   id: '/awesome-word',
   path: '/awesome-word',
   getParentRoute: () => GamesRoute,
+} as any)
+const GalleryCategoryIdRoute = GalleryCategoryIdRouteImport.update({
+  id: '/$categoryId',
+  path: '/$categoryId',
+  getParentRoute: () => GalleryRoute,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   id: '/demo/tanstack-query',
@@ -86,13 +104,16 @@ const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/gallery': typeof GalleryRouteWithChildren
   '/games': typeof GamesRouteWithChildren
   '/npf': typeof NpfRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/gallery/$categoryId': typeof GalleryCategoryIdRoute
   '/games/awesome-word': typeof GamesAwesomeWordRoute
+  '/gallery/': typeof GalleryIndexRoute
   '/games/': typeof GamesIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -105,7 +126,9 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/gallery/$categoryId': typeof GalleryCategoryIdRoute
   '/games/awesome-word': typeof GamesAwesomeWordRoute
+  '/gallery': typeof GalleryIndexRoute
   '/games': typeof GamesIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -114,13 +137,16 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/gallery': typeof GalleryRouteWithChildren
   '/games': typeof GamesRouteWithChildren
   '/npf': typeof NpfRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/gallery/$categoryId': typeof GalleryCategoryIdRoute
   '/games/awesome-word': typeof GamesAwesomeWordRoute
+  '/gallery/': typeof GalleryIndexRoute
   '/games/': typeof GamesIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -130,13 +156,16 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/gallery'
     | '/games'
     | '/npf'
     | '/stack'
     | '/tools'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/gallery/$categoryId'
     | '/games/awesome-word'
+    | '/gallery/'
     | '/games/'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -149,7 +178,9 @@ export interface FileRouteTypes {
     | '/tools'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/gallery/$categoryId'
     | '/games/awesome-word'
+    | '/gallery'
     | '/games'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -157,13 +188,16 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/gallery'
     | '/games'
     | '/npf'
     | '/stack'
     | '/tools'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/gallery/$categoryId'
     | '/games/awesome-word'
+    | '/gallery/'
     | '/games/'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -172,6 +206,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  GalleryRoute: typeof GalleryRouteWithChildren
   GamesRoute: typeof GamesRouteWithChildren
   NpfRoute: typeof NpfRoute
   StackRoute: typeof StackRoute
@@ -212,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -233,12 +275,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesIndexRouteImport
       parentRoute: typeof GamesRoute
     }
+    '/gallery/': {
+      id: '/gallery/'
+      path: '/'
+      fullPath: '/gallery/'
+      preLoaderRoute: typeof GalleryIndexRouteImport
+      parentRoute: typeof GalleryRoute
+    }
     '/games/awesome-word': {
       id: '/games/awesome-word'
       path: '/awesome-word'
       fullPath: '/games/awesome-word'
       preLoaderRoute: typeof GamesAwesomeWordRouteImport
       parentRoute: typeof GamesRoute
+    }
+    '/gallery/$categoryId': {
+      id: '/gallery/$categoryId'
+      path: '/$categoryId'
+      fullPath: '/gallery/$categoryId'
+      preLoaderRoute: typeof GalleryCategoryIdRouteImport
+      parentRoute: typeof GalleryRoute
     }
     '/demo/tanstack-query': {
       id: '/demo/tanstack-query'
@@ -271,6 +327,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface GalleryRouteChildren {
+  GalleryCategoryIdRoute: typeof GalleryCategoryIdRoute
+  GalleryIndexRoute: typeof GalleryIndexRoute
+}
+
+const GalleryRouteChildren: GalleryRouteChildren = {
+  GalleryCategoryIdRoute: GalleryCategoryIdRoute,
+  GalleryIndexRoute: GalleryIndexRoute,
+}
+
+const GalleryRouteWithChildren =
+  GalleryRoute._addFileChildren(GalleryRouteChildren)
+
 interface GamesRouteChildren {
   GamesAwesomeWordRoute: typeof GamesAwesomeWordRoute
   GamesIndexRoute: typeof GamesIndexRoute
@@ -286,6 +355,7 @@ const GamesRouteWithChildren = GamesRoute._addFileChildren(GamesRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  GalleryRoute: GalleryRouteWithChildren,
   GamesRoute: GamesRouteWithChildren,
   NpfRoute: NpfRoute,
   StackRoute: StackRoute,

@@ -86,56 +86,56 @@ export function getKeyboardState(
 	return map;
 }
 
-export function getVisibleKeyboardLetters(
-	keyboardState: Map<string, KeyboardLetterState>,
-	allLetters: readonly string[],
-): string[] {
-	return allLetters.filter((letter) => {
-		const state = keyboardState.get(letter);
-		return state !== "absent";
-	});
-}
-
-export function buildCurrentRow(
+export function createInitialRow(
 	wordLength: WordLength,
 	lockedGreens: LockedGreens,
-	userInput: string,
-): string {
-	const chars = Array.from({ length: wordLength }, () => "");
-	let inputIdx = 0;
+): string[] {
+	return Array.from({ length: wordLength }, (_, i) => lockedGreens[i] ?? "");
+}
 
-	for (let i = 0; i < wordLength; i++) {
-		const locked = lockedGreens[i];
-		if (locked) {
-			chars[i] = locked;
-		} else if (inputIdx < userInput.length) {
-			chars[i] = userInput[inputIdx] ?? "";
-			inputIdx++;
+export function insertLetter(row: string[], key: string): string[] {
+	const next = [...row];
+	const idx = next.indexOf("");
+	if (idx === -1) return next;
+	next[idx] = key;
+	return next;
+}
+
+export function setLetterAt(
+	row: string[],
+	index: number,
+	key: string,
+): string[] {
+	if (index < 0 || index >= row.length) return row;
+	const next = [...row];
+	next[index] = key;
+	return next;
+}
+
+export function clearLetterAt(row: string[], index: number): string[] {
+	if (index < 0 || index >= row.length) return row;
+	const next = [...row];
+	next[index] = "";
+	return next;
+}
+
+export function deleteLetter(row: string[]): string[] {
+	const next = [...row];
+	for (let i = next.length - 1; i >= 0; i--) {
+		if (next[i] !== "") {
+			next[i] = "";
+			break;
 		}
 	}
-
-	return chars.join("");
+	return next;
 }
 
-export function getEditableIndices(
-	wordLength: WordLength,
-	lockedGreens: LockedGreens,
-): number[] {
-	const indices: number[] = [];
-	for (let i = 0; i < wordLength; i++) {
-		if (!lockedGreens[i]) indices.push(i);
-	}
-	return indices;
+export function rowToString(row: string[]): string {
+	return row.join("");
 }
 
-export function isRowComplete(
-	wordLength: WordLength,
-	lockedGreens: LockedGreens,
-	userInput: string,
-): boolean {
-	const row = buildCurrentRow(wordLength, lockedGreens, userInput);
-	if (row.length !== wordLength) return false;
-	return [...row].every((char) => char !== "");
+export function isRowComplete(row: string[]): boolean {
+	return row.every((char) => char !== "");
 }
 
 export function calculateWinScore(
@@ -170,4 +170,31 @@ export function getKeyboardRows(
 
 export function getAllKeyboardLetters(language: "sv" | "en"): string[] {
 	return getKeyboardRows(language).flat();
+}
+
+export function getActiveAndAbsentKeyboardLetters(
+	language: "sv" | "en",
+	keyboardState: Map<string, KeyboardLetterState>,
+): { activeRows: string[][]; absentRows: (string | null)[][] } {
+	const absentRows: (string | null)[][] = [];
+	const activeRows = getKeyboardRows(language)
+		.map((row) => {
+			const activeRow: string[] = [];
+			const absentRow: (string | null)[] = [];
+
+			for (const letter of row) {
+				if (keyboardState.get(letter) === "absent") {
+					absentRow.push(letter);
+				} else {
+					activeRow.push(letter);
+					absentRow.push(null);
+				}
+			}
+
+			absentRows.push(absentRow);
+			return activeRow;
+		})
+		.filter((row) => row.length > 0);
+
+	return { activeRows, absentRows };
 }
