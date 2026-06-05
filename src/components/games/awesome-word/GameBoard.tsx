@@ -4,19 +4,19 @@ import type {
 	GuessRow,
 	LockedGreens,
 } from "#/components/games/awesome-word/gameLogic";
-import {
-	buildCurrentRow,
-	MAX_GUESSES,
-} from "#/components/games/awesome-word/gameLogic";
+import { MAX_GUESSES } from "#/components/games/awesome-word/gameLogic";
 import type { WordLength } from "#/data/awesome-word/types";
 
 type GameBoardProps = {
 	wordLength: WordLength;
 	guesses: GuessRow[];
-	currentInput: string;
+	currentRow: string[];
 	lockedGreens: LockedGreens;
 	currentRowIndex: number;
 	isFalling: boolean;
+	selectedIndex: number | null;
+	onSelectTile: (index: number) => void;
+	inputLocked: boolean;
 };
 
 function fallStyle(row: number, col: number): CSSProperties {
@@ -40,12 +40,14 @@ function tileClass(state: string, extras: string[] = []): string {
 export default function GameBoard({
 	wordLength,
 	guesses,
-	currentInput,
+	currentRow,
 	lockedGreens,
 	currentRowIndex,
 	isFalling,
+	selectedIndex,
+	onSelectTile,
+	inputLocked,
 }: GameBoardProps) {
-	const currentRow = buildCurrentRow(wordLength, lockedGreens, currentInput);
 	const boardClass = isFalling
 		? "awesome-word-board is-falling"
 		: "awesome-word-board";
@@ -62,30 +64,46 @@ export default function GameBoard({
 						{Array.from({ length: wordLength }, (_, colIdx) => {
 							let letter = "";
 							let state = "empty";
-							const isLockedGreen = Boolean(lockedGreens[colIdx]) && isCurrent;
 
 							if (isPast && guess) {
 								letter = guess.letters[colIdx] ?? "";
 								state = guess.states[colIdx] ?? "empty";
 							} else if (isCurrent) {
 								letter = currentRow[colIdx] ?? "";
-								state = letter ? "tbd" : "empty";
-								if (lockedGreens[colIdx]) state = "correct";
+								if (letter) {
+									state = lockedGreens[colIdx] === letter ? "correct" : "tbd";
+								}
 							}
 
 							const extras: string[] = [];
 							if (isCurrent) extras.push("is-current");
-							if (isLockedGreen) extras.push("is-locked");
+							if (isCurrent && selectedIndex === colIdx) {
+								extras.push("is-selected");
+							}
 							if (isFalling && letter) extras.push("is-falling");
 
+							const className = tileClass(state, extras);
+							const style =
+								isFalling && letter ? fallStyle(rowIdx, colIdx) : undefined;
+
+							if (isCurrent && !inputLocked && !isFalling) {
+								return (
+									<button
+										key={`col-${colIdx}`}
+										type="button"
+										className={className}
+										style={style}
+										onClick={() => onSelectTile(colIdx)}
+										aria-label={`Position ${colIdx + 1}${letter ? `: ${letter}` : ""}`}
+										aria-pressed={selectedIndex === colIdx}
+									>
+										{letter}
+									</button>
+								);
+							}
+
 							return (
-								<div
-									key={`col-${colIdx}`}
-									className={tileClass(state, extras)}
-									style={
-										isFalling && letter ? fallStyle(rowIdx, colIdx) : undefined
-									}
-								>
+								<div key={`col-${colIdx}`} className={className} style={style}>
 									{letter}
 								</div>
 							);

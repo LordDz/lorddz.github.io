@@ -23,7 +23,7 @@ export const wordsFish: WordListByLength = {
 		"ANGLER",
 		"HALIBU",
 		"HADDIE",
-		"STURGE",
+		"DORADO",
 	],
 	7: [
 		"HALIBUT",
@@ -31,8 +31,8 @@ export const wordsFish: WordListByLength = {
 		"GROUPER",
 		"WALLEYE",
 		"ANCHOVY",
-		"MACKERL",
 		"BONITOS",
 		"TARPONS",
+		"SNAPPER",
 	],
 };
