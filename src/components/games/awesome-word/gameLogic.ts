@@ -2,7 +2,12 @@ import type { WordLength } from "#/data/awesome-word/types";
 
 export type TileState = "empty" | "tbd" | "correct" | "present" | "absent";
 
-export type KeyboardLetterState = "unused" | "correct" | "present" | "absent";
+export type KeyboardLetterState =
+	| "unused"
+	| "draft"
+	| "correct"
+	| "present"
+	| "absent";
 
 export type LockedGreens = Partial<Record<number, string>>;
 
@@ -61,6 +66,7 @@ export function getKeyboardState(
 	const map = new Map<string, KeyboardLetterState>();
 	const priority: Record<KeyboardLetterState, number> = {
 		unused: 0,
+		draft: 0,
 		absent: 1,
 		present: 2,
 		correct: 3,
@@ -84,6 +90,26 @@ export function getKeyboardState(
 	}
 
 	return map;
+}
+
+export function getDisplayKeyboardState(
+	guesses: GuessRow[],
+	currentRow: string[],
+): Map<string, KeyboardLetterState> {
+	const submitted = getKeyboardState(guesses);
+	const result = new Map<string, KeyboardLetterState>(submitted);
+
+	for (const letter of currentRow) {
+		if (!letter) continue;
+		const submittedState = submitted.get(letter);
+		if (submittedState === "correct" || submittedState === "present") {
+			result.set(letter, submittedState);
+		} else {
+			result.set(letter, "draft");
+		}
+	}
+
+	return result;
 }
 
 export function createInitialRow(
@@ -172,22 +198,28 @@ export function getAllKeyboardLetters(language: "sv" | "en"): string[] {
 	return getKeyboardRows(language).flat();
 }
 
+export function getAbsentKeyVisualState(
+	letter: string,
+	currentRow: string[],
+): Extract<KeyboardLetterState, "absent" | "draft"> {
+	return currentRow.includes(letter) ? "draft" : "absent";
+}
+
 export function getActiveAndAbsentKeyboardLetters(
 	language: "sv" | "en",
-	keyboardState: Map<string, KeyboardLetterState>,
-): { activeRows: string[][]; absentRows: (string | null)[][] } {
-	const absentRows: (string | null)[][] = [];
+	submittedState: Map<string, KeyboardLetterState>,
+): { activeRows: string[][]; absentRows: string[][] } {
+	const absentRows: string[][] = [];
 	const activeRows = getKeyboardRows(language)
 		.map((row) => {
 			const activeRow: string[] = [];
-			const absentRow: (string | null)[] = [];
+			const absentRow: string[] = [];
 
 			for (const letter of row) {
-				if (keyboardState.get(letter) === "absent") {
+				if (submittedState.get(letter) === "absent") {
 					absentRow.push(letter);
 				} else {
 					activeRow.push(letter);
-					absentRow.push(null);
 				}
 			}
 
