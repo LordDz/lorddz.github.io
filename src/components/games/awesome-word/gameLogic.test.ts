@@ -5,7 +5,9 @@ import {
 	createInitialRow,
 	deleteLetter,
 	evaluateGuess,
+	getAbsentKeyVisualState,
 	getActiveAndAbsentKeyboardLetters,
+	getDisplayKeyboardState,
 	getKeyboardState,
 	getLockedGreens,
 	insertLetter,
@@ -102,7 +104,7 @@ describe("keyboard state", () => {
 		expect(state.get("R")).toBe("absent");
 	});
 
-	it("moves absent letters to three rows with original positions", () => {
+	it("groups absent letters by keyboard row without column gaps", () => {
 		const guesses = [
 			{
 				letters: "LASER",
@@ -116,31 +118,56 @@ describe("keyboard state", () => {
 		);
 
 		expect(absentRows).toHaveLength(3);
-		expect(absentRows[0]).toEqual([
-			null,
-			null,
-			"E",
-			"R",
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-		]);
-		expect(absentRows[1]).toEqual([
-			"A",
-			"S",
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-		]);
-		expect(absentRows[2]).toEqual([null, null, null, null, null, null, null]);
+		expect(absentRows[0]).toEqual(["E", "R"]);
+		expect(absentRows[1]).toEqual(["A", "S"]);
+		expect(absentRows[2]).toEqual([]);
 		expect(activeRows.flat()).toContain("L");
 		expect(activeRows.flat()).not.toContain("S");
+	});
+});
+
+describe("display keyboard state", () => {
+	it("marks unused draft letters as draft", () => {
+		const state = getDisplayKeyboardState([], ["", "H", "E", "", ""]);
+		expect(state.get("H")).toBe("draft");
+		expect(state.get("E")).toBe("draft");
+		expect(state.get("L")).toBeUndefined();
+	});
+
+	it("keeps correct and present colors for draft letters", () => {
+		const guesses = [
+			{
+				letters: "HELLO",
+				states: ["correct", "present", "absent", "absent", "absent"],
+			},
+		];
+		const state = getDisplayKeyboardState(guesses, ["H", "E", "", "", ""]);
+		expect(state.get("H")).toBe("correct");
+		expect(state.get("E")).toBe("present");
+	});
+});
+
+describe("absent key highlighting", () => {
+	it("marks absent keys in the current row as draft", () => {
+		expect(getAbsentKeyVisualState("A", ["L", "A", "", "", ""])).toBe("draft");
+		expect(getAbsentKeyVisualState("A", ["L", "", "", "", ""])).toBe("absent");
+	});
+
+	it("keeps absent letters in the absent rows while typing them", () => {
+		const guesses = [
+			{
+				letters: "LASER",
+				states: ["correct", "absent", "absent", "absent", "absent"],
+			},
+		];
+		const submitted = getKeyboardState(guesses);
+		const { activeRows, absentRows } = getActiveAndAbsentKeyboardLetters(
+			"en",
+			submitted,
+		);
+
+		expect(absentRows[1]).toEqual(["A", "S"]);
+		expect(activeRows.flat()).not.toContain("A");
+		expect(getAbsentKeyVisualState("A", ["L", "A", "", "", ""])).toBe("draft");
 	});
 });

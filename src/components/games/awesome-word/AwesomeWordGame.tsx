@@ -10,6 +10,7 @@ import {
 	deleteLetter,
 	evaluateGuess,
 	type GuessRow,
+	getDisplayKeyboardState,
 	getKeyboardState,
 	getLockedGreens,
 	insertLetter,
@@ -68,6 +69,7 @@ export default function AwesomeWordGame() {
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [isFalling, setIsFalling] = useState(false);
 	const [message, setMessage] = useState("");
+	const [lossWord, setLossWord] = useState<string | null>(null);
 	const [debugWordRevealed, setDebugWordRevealed] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 	const boardRef = useRef<HTMLDivElement>(null);
@@ -77,9 +79,13 @@ export default function AwesomeWordGame() {
 		: null;
 	const wordLength = storeState.wordLength;
 	const lockedGreens = getLockedGreens(round.guesses);
-	const keyboardState = getKeyboardState(round.guesses);
+	const submittedKeyboardState = getKeyboardState(round.guesses);
+	const keyboardState = getDisplayKeyboardState(
+		round.guesses,
+		round.currentRow,
+	);
 	const rowComplete = isRowComplete(round.currentRow);
-	const inputLocked = isAnimating || isFalling;
+	const inputLocked = isAnimating || isFalling || lossWord !== null;
 
 	const startRound = useCallback(
 		(catId: CategoryId, length: WordLength, exclude: string[] = []) => {
@@ -90,6 +96,7 @@ export default function AwesomeWordGame() {
 				currentRowIndex: 0,
 			});
 			setMessage("");
+			setLossWord(null);
 			setDebugWordRevealed(false);
 			setSelectedIndex(null);
 		},
@@ -121,15 +128,15 @@ export default function AwesomeWordGame() {
 			target: string,
 			catId: CategoryId,
 		) => {
-			if (!boardRef.current) return;
-
-			await captureGameScreenshot(boardRef.current, {
-				word: target,
-				won,
-				categoryId: catId,
-			});
-
 			if (won) {
+				if (!boardRef.current) return;
+
+				await captureGameScreenshot(boardRef.current, {
+					word: target,
+					won: true,
+					categoryId: catId,
+				});
+
 				setIsFalling(true);
 				setTimeout(() => {
 					recordWin(attempts, wordLength);
@@ -138,11 +145,24 @@ export default function AwesomeWordGame() {
 					setIsFalling(false);
 					setIsAnimating(false);
 				}, FALL_ANIMATION_MS);
-			} else {
-				recordLoss();
-				alert(`Aj, tråkigt, ordet var: ${target}`);
-				startRound(catId, wordLength, [target]);
+				return;
 			}
+
+			setLossWord(target);
+			setTimeout(async () => {
+				if (boardRef.current) {
+					await captureGameScreenshot(boardRef.current, {
+						word: target,
+						won: false,
+						categoryId: catId,
+					});
+				}
+
+				recordLoss();
+				startRound(catId, wordLength, [target]);
+				setLossWord(null);
+				setIsAnimating(false);
+			}, FALL_ANIMATION_MS);
 		},
 		[wordLength, startRound],
 	);
@@ -274,7 +294,10 @@ export default function AwesomeWordGame() {
 
 	return (
 		<div className="awesome-word">
-			<div ref={boardRef} className="awesome-word-shell">
+			<div
+				ref={boardRef}
+				className={`awesome-word-shell${lossWord ? " is-loss-reveal" : ""}`}
+			>
 				<h1 className="awesome-word-title">AwesomeWord</h1>
 
 				{phase === "category" ? (
@@ -302,12 +325,15 @@ export default function AwesomeWordGame() {
 						{category && (
 							<GameKeyboard
 								language={category.language}
+								submittedKeyboardState={submittedKeyboardState}
 								keyboardState={keyboardState}
+								currentRow={round.currentRow}
 								isRowComplete={rowComplete}
 								onKey={handleKey}
 								onEnter={submitGuess}
 								onBackspace={handleBackspace}
 								disabled={inputLocked}
+								lossWord={lossWord}
 							/>
 						)}
 						<button

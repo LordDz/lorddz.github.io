@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
+
 .awesome-word {
 	--aw-bg: #b8c9b0;
 	--aw-tile-empty: #a3b89a;
@@ -10,6 +12,7 @@
 	--aw-correct: #6b8f71;
 	--aw-present: #c9a66b;
 	--aw-absent: #1e3347;
+	--aw-draft: #8b6bb5;
 	--aw-text: #1e3347;
 	--aw-text-muted: #4a5f52;
 	--aw-header-bg: #1e3347;
@@ -41,7 +44,35 @@
 	.awesome-word-keyboard {
 		padding-left: 0;
 		padding-right: 0;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
+		--aw-key-gap: 0.32rem;
+		--aw-key-hit-inset: -0.375rem;
 	}
+
+	.awesome-word-keyboard-row {
+		gap: var(--aw-key-gap);
+		--aw-key-size-row: calc(
+			(100% - (var(--aw-row-key-count, 10) - 1) * var(--aw-key-gap)) /
+			var(--aw-row-key-count, 10)
+		);
+	}
+
+	.awesome-word-keyboard-row.is-actions {
+		--aw-key-size-row: clamp(2rem, 8vw, 2.75rem);
+	}
+
+	.awesome-word-key.is-letter,
+	.awesome-word-key.is-backspace {
+		width: var(--aw-key-size-row, var(--aw-key-size));
+		height: max(var(--aw-key-size-row, var(--aw-key-size)), 2rem);
+		min-width: var(--aw-key-size-row, var(--aw-key-size));
+		flex: 0 0 var(--aw-key-size-row, var(--aw-key-size));
+	}
+}
+
+.awesome-word-shell.is-loss-reveal {
+	overflow: visible;
 }
 
 .awesome-word-title {
@@ -214,6 +245,89 @@
 	}
 }
 
+@keyframes aw-key-loss-fall {
+	0% {
+		transform: translate(0, 0) rotate(0deg);
+		opacity: 1;
+	}
+	18% {
+		transform: translate(var(--aw-push-x, 0), var(--aw-push-y, 0)) scale(0.94);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(
+				calc(var(--aw-push-x, 0px) + var(--aw-fall-x, 0px)),
+				calc(110vh + var(--aw-push-y, 0px))
+			)
+			rotate(var(--aw-fall-rot, 0deg));
+		opacity: 0;
+	}
+}
+
+@keyframes aw-loss-word-in {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.72);
+		filter: blur(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+		filter: blur(0);
+	}
+}
+
+.awesome-word-keyboard-stage {
+	position: relative;
+}
+
+.awesome-word-keyboard-stage.is-loss-falling {
+	overflow: visible;
+}
+
+.awesome-word-loss-word {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 20;
+	margin: 0;
+	pointer-events: none;
+	user-select: none;
+	font-family: "Titan One", "Manrope", sans-serif;
+	font-size: clamp(2.75rem, 16vw, 4.75rem);
+	line-height: 0.92;
+	letter-spacing: -0.03em;
+	text-transform: uppercase;
+	color: #fff;
+	opacity: 0;
+	animation: aw-loss-word-in 0.6s ease-out forwards;
+	text-shadow:
+		0 0 28px rgba(255, 120, 100, 0.95),
+		0 0 56px rgba(229, 57, 53, 0.55),
+		2px 2px 0 #ef5350,
+		3px 3px 0 #e53935,
+		4px 4px 0 #d32f2f,
+		5px 5px 0 #c62828,
+		6px 6px 0 #b71c1c,
+		7px 7px 0 #a31515,
+		8px 8px 0 #8e0000,
+		9px 9px 0 #7f0000,
+		10px 10px 0 #5d0000,
+		12px 14px 24px rgba(80, 0, 0, 0.55);
+	filter: drop-shadow(0 0 24px rgba(255, 100, 80, 0.75));
+}
+
+.awesome-word-loss-word.is-long {
+	font-size: clamp(2rem, 11vw, 3.5rem);
+	letter-spacing: -0.02em;
+}
+
+.awesome-word-key.is-falling {
+	animation: aw-key-loss-fall 1.05s ease-in forwards;
+	animation-delay: var(--aw-fall-delay, 0ms);
+	pointer-events: none;
+}
+
 .awesome-word-keyboard {
 	display: flex;
 	flex-direction: column;
@@ -223,6 +337,8 @@
 	width: 100%;
 	max-width: 100%;
 	padding: 0 0.15rem;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .awesome-word-keyboard-row {
@@ -235,31 +351,23 @@
 .awesome-word-keyboard-absent {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: 2.2px;
 	margin-top: 0.15rem;
-	--aw-absent-key-size: calc(var(--aw-key-size) * 0.65);
+	--aw-absent-key-size: calc(var(--aw-key-size) * 0.65 * 1.25);
 }
 
 .awesome-word-keyboard-absent .awesome-word-keyboard-row.is-absent-row {
 	flex-wrap: nowrap;
-	gap: 0.175rem;
+	gap: calc(0.175rem * 1.1);
 }
 
 .awesome-word-keyboard-absent .awesome-word-key.is-letter {
 	width: var(--aw-absent-key-size);
 	height: var(--aw-absent-key-size);
 	min-width: var(--aw-absent-key-size);
-	flex: 0 0 var(--aw-key-size);
-	margin: auto;
+	flex: 0 0 var(--aw-absent-key-size);
 	border-radius: 0.5rem;
-	font-size: clamp(0.6875rem, 3vw, 0.8125rem);
-}
-
-.awesome-word-key-spacer {
-	width: var(--aw-key-size);
-	height: var(--aw-key-size);
-	min-width: var(--aw-key-size);
-	flex: 0 0 var(--aw-key-size);
+	font-size: clamp(0.86rem, 3.75vw, 1.016rem);
 }
 
 .awesome-word-keyboard-row.is-actions {
@@ -273,6 +381,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	position: relative;
+	isolation: isolate;
 	border: none;
 	border-radius: 0.5rem;
 	background: var(--aw-key-bg);
@@ -284,7 +394,33 @@
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 	transition:
 		background-color 0.1s,
-		transform 0.08s;
+		transform 0.08s,
+		box-shadow 0.1s;
+}
+
+.awesome-word-key::before {
+	content: "";
+	position: absolute;
+	inset: var(--aw-key-hit-inset, -0.25rem);
+	border-radius: inherit;
+	z-index: -1;
+}
+
+.awesome-word-key.is-flashed {
+	animation: aw-key-flash 0.18s ease-out;
+}
+
+@keyframes aw-key-flash {
+	0% {
+		transform: scale(1.03);
+		box-shadow:
+			0 0 0 1px rgba(255, 255, 255, 0.75),
+			0 2px 5px rgba(30, 51, 71, 0.16);
+	}
+	100% {
+		transform: scale(1);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+	}
 }
 
 .awesome-word-key.is-letter {
@@ -302,6 +438,12 @@
 
 .awesome-word-key:active:not(:disabled) {
 	transform: translateY(0);
+}
+
+@media (hover: none) {
+	.awesome-word-key:hover:not(:disabled) {
+		transform: none;
+	}
 }
 
 .awesome-word-key:disabled {
@@ -346,6 +488,15 @@
 .awesome-word-key.is-absent {
 	background: var(--aw-absent);
 	color: #fff;
+}
+
+.awesome-word-key.is-draft {
+	background: var(--aw-draft);
+	color: #fff;
+}
+
+.awesome-word-keyboard-absent .awesome-word-key.is-draft {
+	box-shadow: 0 2px 6px rgba(139, 107, 181, 0.35);
 }
 
 .awesome-word-categories {
