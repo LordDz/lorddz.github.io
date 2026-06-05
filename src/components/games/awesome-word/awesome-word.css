@@ -4,7 +4,7 @@
 	--aw-tile-border: transparent;
 	--aw-tile-bg: #a3b89a;
 	--aw-tile-text: #ffffff;
-	--aw-key-size: clamp(2.16rem, 7.2vw, 3.015rem);
+	--aw-key-size: clamp(1.84rem, 6.1vw, 2.56rem);
 	--aw-key-bg: #ffffff;
 	--aw-key-text: #1e3347;
 	--aw-correct: #6b8f71;

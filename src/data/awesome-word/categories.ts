@@ -19,9 +19,9 @@ export const awesomeWordCategories: AwesomeWordCategory[] = [
 	{
 		id: "fish",
 		name: "Fish species",
-		description: "Swedish fish names",
+		description: "English fish names",
 		imageUrl: "/games/fish.svg",
-		language: "sv",
+		language: "en",
 	},
 	{
 		id: "game-titles",

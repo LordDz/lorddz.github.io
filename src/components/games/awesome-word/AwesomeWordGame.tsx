@@ -17,7 +17,6 @@ import ScreenshotGallery from "#/components/games/awesome-word/ScreenshotGallery
 import { captureGameScreenshot } from "#/components/games/awesome-word/screenshot";
 import {
 	getCategoryById,
-	isValidCategoryWord,
 	pickRandomWord,
 } from "#/data/awesome-word/categories";
 import type { CategoryId, WordLength } from "#/data/awesome-word/types";
@@ -54,15 +53,8 @@ function createRound(
 
 export default function AwesomeWordGame() {
 	const storeState = useStore(awesomeWordStore);
-	const [phase, setPhase] = useState<GamePhase>(
-		storeState.categoryId ? "playing" : "category",
-	);
-	const [round, setRound] = useState<RoundState>(() =>
-		storeState.categoryId
-			? createRound(storeState.categoryId, storeState.wordLength)
-			: createRound("science", 5),
-	);
-	const [shakingRow, setShakingRow] = useState<number | null>(null);
+	const [phase, setPhase] = useState<GamePhase>("category");
+	const [round, setRound] = useState<RoundState>(() => createRound("science", 5));
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [isFalling, setIsFalling] = useState(false);
 	const [message, setMessage] = useState("");
@@ -75,23 +67,12 @@ export default function AwesomeWordGame() {
 	const wordLength = storeState.wordLength;
 	const lockedGreens = getLockedGreens(round.guesses);
 	const keyboardState = getKeyboardState(round.guesses);
-	const currentRow = buildCurrentRow(
-		wordLength,
-		lockedGreens,
-		round.currentInput,
-	);
 	const rowComplete = isRowComplete(
 		wordLength,
 		lockedGreens,
 		round.currentInput,
 	);
 	const inputLocked = isAnimating || isFalling;
-	const submitLabel =
-		rowComplete &&
-		storeState.categoryId &&
-		!isValidCategoryWord(storeState.categoryId, wordLength, currentRow)
-			? "🤨"
-			: "OK";
 
 	const startRound = useCallback(
 		(catId: CategoryId, length: WordLength, exclude: string[] = []) => {
@@ -102,7 +83,6 @@ export default function AwesomeWordGame() {
 				currentRowIndex: 0,
 			});
 			setMessage("");
-			setShakingRow(null);
 			setDebugWordRevealed(false);
 		},
 		[],
@@ -170,15 +150,6 @@ export default function AwesomeWordGame() {
 
 		const row = buildCurrentRow(wordLength, lockedGreens, round.currentInput);
 		if (!isRowComplete(wordLength, lockedGreens, round.currentInput)) return;
-
-		if (
-			storeState.categoryId &&
-			!isValidCategoryWord(storeState.categoryId, wordLength, row)
-		) {
-			setShakingRow(round.currentRowIndex);
-			setTimeout(() => setShakingRow(null), 500);
-			return;
-		}
 
 		setIsAnimating(true);
 		const states = evaluateGuess(row, round.target);
@@ -294,7 +265,6 @@ export default function AwesomeWordGame() {
 							currentInput={round.currentInput}
 							lockedGreens={lockedGreens}
 							currentRowIndex={round.currentRowIndex}
-							shakingRow={shakingRow}
 							isFalling={isFalling}
 						/>
 						{message && <p className="awesome-word-message">{message}</p>}
@@ -302,7 +272,6 @@ export default function AwesomeWordGame() {
 							<GameKeyboard
 								language={category.language}
 								keyboardState={keyboardState}
-								submitLabel={submitLabel}
 								isRowComplete={rowComplete}
 								onKey={handleKey}
 								onEnter={submitGuess}
@@ -315,7 +284,7 @@ export default function AwesomeWordGame() {
 							className="awesome-word-change-category"
 							onClick={() => setPhase("category")}
 						>
-							Byt kategori
+							change category
 						</button>
 						<div className="awesome-word-debug">
 							<button

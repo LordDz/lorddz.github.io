@@ -16,7 +16,6 @@ type GameBoardProps = {
 	currentInput: string;
 	lockedGreens: LockedGreens;
 	currentRowIndex: number;
-	shakingRow: number | null;
 	isFalling: boolean;
 };
 
@@ -44,7 +43,6 @@ export default function GameBoard({
 	currentInput,
 	lockedGreens,
 	currentRowIndex,
-	shakingRow,
 	isFalling,
 }: GameBoardProps) {
 	const currentRow = buildCurrentRow(wordLength, lockedGreens, currentInput);
@@ -58,13 +56,9 @@ export default function GameBoard({
 				const isCurrent = rowIdx === currentRowIndex;
 				const isPast = rowIdx < currentRowIndex;
 				const guess = guesses[rowIdx];
-				const shake =
-					shakingRow === rowIdx
-						? "awesome-word-row is-shaking"
-						: "awesome-word-row";
 
 				return (
-					<div key={`row-${rowIdx}`} className={shake}>
+					<div key={`row-${rowIdx}`} className="awesome-word-row">
 						{Array.from({ length: wordLength }, (_, colIdx) => {
 							let letter = "";
 							let state = "empty";
