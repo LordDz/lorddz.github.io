@@ -1,4 +1,4 @@
-import{i as e,t}from"./jsx-runtime-YBGVDCFs.js";import{t as n}from"./react-RJCvC3vm.js";import{n as r,t as i}from"./useHorizontalSwipe-BpHGFr_g.js";import{n as a,t as o}from"./index-BxYI0b8M.js";var s=e(n(),1),c=[{id:`utredning`,kicker:`Bakgrund`,title:`Hur jag hamnade här`,bullets:[`Sambo gjorde privatutredning för 1 år sedan`,`Mitt bonusbarn hade symptom som jag kände igen mig i`,`Jag gjorde själv en privatutredning för ca 7 månader sen`],speakerNotes:`Min sambo gjorde en privatutredning för ungefär ett år sedan.
+import{i as e,t}from"./jsx-runtime-YBGVDCFs.js";import{t as n}from"./react-RJCvC3vm.js";import{n as r,t as i}from"./useHorizontalSwipe-BlUzQOgC.js";import{n as a,t as o}from"./index-C6vi9pC1.js";var s=e(n(),1),c=[{id:`utredning`,kicker:`Bakgrund`,title:`Hur jag hamnade här`,bullets:[`Sambo gjorde privatutredning för 1 år sedan`,`Mitt bonusbarn hade symptom som jag kände igen mig i`,`Jag gjorde själv en privatutredning för ca 7 månader sen`],speakerNotes:`Min sambo gjorde en privatutredning för ungefär ett år sedan.
 
 Mitt bonusbarn hade symptom som jag kände igen mig i – det var där jag började se mönster från min egen barndom.
 
