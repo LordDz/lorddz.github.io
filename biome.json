@@ -49,6 +49,16 @@
 			}
 		},
 		{
+			"includes": ["**/src/components/games/**"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noArrayIndexKey": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["**/src/routes/__root.tsx"],
 			"linter": {
 				"rules": {

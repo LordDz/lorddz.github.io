@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as StackRouteImport } from './routes/stack'
 import { Route as NpfRouteImport } from './routes/npf'
+import { Route as GamesRouteImport } from './routes/games'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GamesIndexRouteImport } from './routes/games/index'
+import { Route as GamesAwesomeWordRouteImport } from './routes/games/awesome-word'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
@@ -34,6 +37,11 @@ const NpfRoute = NpfRouteImport.update({
   path: '/npf',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesRoute = GamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -43,6 +51,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const GamesIndexRoute = GamesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GamesRoute,
+} as any)
+const GamesAwesomeWordRoute = GamesAwesomeWordRouteImport.update({
+  id: '/awesome-word',
+  path: '/awesome-word',
+  getParentRoute: () => GamesRoute,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   id: '/demo/tanstack-query',
@@ -68,11 +86,14 @@ const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/games': typeof GamesRouteWithChildren
   '/npf': typeof NpfRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/games/awesome-word': typeof GamesAwesomeWordRoute
+  '/games/': typeof GamesIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
 }
@@ -84,6 +105,8 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/games/awesome-word': typeof GamesAwesomeWordRoute
+  '/games': typeof GamesIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
 }
@@ -91,11 +114,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/games': typeof GamesRouteWithChildren
   '/npf': typeof NpfRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/games/awesome-word': typeof GamesAwesomeWordRoute
+  '/games/': typeof GamesIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
 }
@@ -104,11 +130,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/games'
     | '/npf'
     | '/stack'
     | '/tools'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/games/awesome-word'
+    | '/games/'
     | '/demo/form/address'
     | '/demo/form/simple'
   fileRoutesByTo: FileRoutesByTo
@@ -120,17 +149,22 @@ export interface FileRouteTypes {
     | '/tools'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/games/awesome-word'
+    | '/games'
     | '/demo/form/address'
     | '/demo/form/simple'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/games'
     | '/npf'
     | '/stack'
     | '/tools'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/games/awesome-word'
+    | '/games/'
     | '/demo/form/address'
     | '/demo/form/simple'
   fileRoutesById: FileRoutesById
@@ -138,6 +172,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  GamesRoute: typeof GamesRouteWithChildren
   NpfRoute: typeof NpfRoute
   StackRoute: typeof StackRoute
   ToolsRoute: typeof ToolsRoute
@@ -170,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NpfRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games': {
+      id: '/games'
+      path: '/games'
+      fullPath: '/games'
+      preLoaderRoute: typeof GamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -183,6 +225,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/games/': {
+      id: '/games/'
+      path: '/'
+      fullPath: '/games/'
+      preLoaderRoute: typeof GamesIndexRouteImport
+      parentRoute: typeof GamesRoute
+    }
+    '/games/awesome-word': {
+      id: '/games/awesome-word'
+      path: '/awesome-word'
+      fullPath: '/games/awesome-word'
+      preLoaderRoute: typeof GamesAwesomeWordRouteImport
+      parentRoute: typeof GamesRoute
     }
     '/demo/tanstack-query': {
       id: '/demo/tanstack-query'
@@ -215,9 +271,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface GamesRouteChildren {
+  GamesAwesomeWordRoute: typeof GamesAwesomeWordRoute
+  GamesIndexRoute: typeof GamesIndexRoute
+}
+
+const GamesRouteChildren: GamesRouteChildren = {
+  GamesAwesomeWordRoute: GamesAwesomeWordRoute,
+  GamesIndexRoute: GamesIndexRoute,
+}
+
+const GamesRouteWithChildren = GamesRoute._addFileChildren(GamesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  GamesRoute: GamesRouteWithChildren,
   NpfRoute: NpfRoute,
   StackRoute: StackRoute,
   ToolsRoute: ToolsRoute,

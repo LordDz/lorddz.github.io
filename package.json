@@ -30,6 +30,7 @@
     "@tanstack/react-store": "^0.11.0",
     "@tanstack/react-table": "latest",
     "@tanstack/router-plugin": "^1.132.0",
+    "html-to-image": "^1.11.13",
     "jszip": "^3.10.1",
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",
