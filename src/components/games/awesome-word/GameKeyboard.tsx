@@ -9,7 +9,6 @@ import type { CategoryLanguage } from "#/data/awesome-word/types";
 type GameKeyboardProps = {
 	language: CategoryLanguage;
 	keyboardState: Map<string, KeyboardLetterState>;
-	submitLabel: "OK" | "🤨";
 	isRowComplete: boolean;
 	onKey: (key: string) => void;
 	onEnter: () => void;
@@ -28,7 +27,6 @@ function keyClass(state: KeyboardLetterState | undefined): string {
 export default function GameKeyboard({
 	language,
 	keyboardState,
-	submitLabel,
 	isRowComplete,
 	onKey,
 	onEnter,
@@ -40,13 +38,7 @@ export default function GameKeyboard({
 		getVisibleKeyboardLetters(keyboardState, allLetters),
 	);
 	const rows = getKeyboardRows(language);
-	const submitClasses = [
-		"awesome-word-key",
-		"is-submit",
-		submitLabel === "🤨" ? "is-invalid" : "",
-	]
-		.filter(Boolean)
-		.join(" ");
+	const submitClasses = ["awesome-word-key", "is-submit"].join(" ");
 
 	return (
 		<div className="awesome-word-keyboard">
@@ -73,9 +65,9 @@ export default function GameKeyboard({
 					className={submitClasses}
 					onClick={onEnter}
 					disabled={disabled || !isRowComplete}
-					aria-label={submitLabel === "OK" ? "Skicka ord" : "Ogiltigt ord"}
+					aria-label="Skicka ord"
 				>
-					{submitLabel}
+					OK
 				</button>
 				<button
 					type="button"
