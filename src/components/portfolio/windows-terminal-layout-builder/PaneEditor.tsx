@@ -64,12 +64,71 @@ export default function PaneEditor({
 				/>
 			</label>
 			<label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
+				Saved directories
+				<textarea
+					value={pane.savedDirectories.join("\n")}
+					onChange={(event) =>
+						onChange({
+							savedDirectories: event.target.value
+								.split("\n")
+								.map((directory) => directory.trim())
+								.filter(Boolean),
+						})
+					}
+					rows={3}
+					className="mt-1 w-full resize-y rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 font-mono text-sm font-normal"
+					placeholder={"C:\\Code\\project-a\nC:\\Code\\project-b"}
+				/>
+			</label>
+			{pane.savedDirectories.length ? (
+				<div className="mt-2 flex flex-wrap gap-1">
+					{pane.savedDirectories.map((directory) => (
+						<button
+							type="button"
+							key={directory}
+							onClick={() => onChange({ startingDirectory: directory })}
+							className="max-w-full truncate rounded bg-[var(--surface)] px-2 py-1 font-mono text-xs text-[var(--sea-ink-soft)] hover:text-[var(--sea-ink)]"
+						>
+							Use {directory}
+						</button>
+					))}
+				</div>
+			) : null}
+			<label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
 				Pane title
 				<input
 					value={pane.title}
 					onChange={(event) => onChange({ title: event.target.value })}
 					className="mt-1 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-normal"
 					placeholder="Optional title"
+				/>
+			</label>
+			<label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
+				Command line
+				<input
+					value={pane.commandLine}
+					onChange={(event) => onChange({ commandLine: event.target.value })}
+					className="mt-1 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 font-mono text-sm font-normal"
+					placeholder="e.g. nvim ."
+				/>
+			</label>
+			<label className="mt-3 flex items-center gap-2 text-sm text-[var(--sea-ink-soft)]">
+				<input
+					type="checkbox"
+					checked={pane.appendCommandLine}
+					onChange={(event) =>
+						onChange({ appendCommandLine: event.target.checked })
+					}
+				/>
+				Append command line to the selected profile
+			</label>
+			<label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
+				Color scheme
+				<input
+					value={pane.colorScheme}
+					onChange={(event) => onChange({ colorScheme: event.target.value })}
+					className="mt-1 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-normal"
+					placeholder="Campbell"
 				/>
 			</label>
 			<label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">

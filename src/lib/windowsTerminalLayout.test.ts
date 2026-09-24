@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
 	createFreshLayout,
+	createPresetLayout,
 	generateStartupActions,
 	parseStartupActions,
 	profilesFromSettings,
+	swapPaneContents,
+	updateSplitRatio,
 } from "./windowsTerminalLayout";
 
 const profiles = profilesFromSettings({
@@ -46,4 +49,30 @@ describe("Windows Terminal layout", () => {
 		expect(generateStartupActions(createFreshLayout(profiles), profiles)).toBe(
 			'new-tab -p "PowerShell"',
 		));
+	it("round-trips V2 pane options", () => {
+		const layout = parseStartupActions(
+			'new-tab -p "PowerShell" --colorScheme "Campbell" --appendCommandLine nvim .',
+			profiles,
+		);
+		const pane = layout.tabs[0].root;
+		expect(pane.type === "pane" && pane.commandLine).toBe("nvim .");
+		expect(pane.type === "pane" && pane.appendCommandLine).toBe(true);
+		expect(generateStartupActions(layout, profiles)).toContain(
+			'--colorScheme "Campbell" --appendCommandLine nvim .',
+		);
+	});
+	it("creates editable presets and updates their split ratio", () => {
+		const layout = createPresetLayout("grid", profiles);
+		expect(layout.tabs[0].root.type).toBe("split");
+		const root = layout.tabs[0].root;
+		if (root.type !== "split") return;
+		const resized = updateSplitRatio(root, root.id, 0.7);
+		expect(resized.type === "split" && resized.ratio).toBe(0.7);
+		const first = root.first.type === "split" ? root.first.first : null;
+		const second = root.first.type === "split" ? root.first.second : null;
+		if (!first || !second || first.type !== "pane" || second.type !== "pane")
+			return;
+		const swapped = swapPaneContents(root, first.id, second.id);
+		expect(swapped.type).toBe("split");
+	});
 });
