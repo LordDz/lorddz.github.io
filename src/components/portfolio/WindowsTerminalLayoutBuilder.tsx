@@ -8,6 +8,7 @@ import {
 import ActionButton from "#/components/ActionButton/ActionButton";
 import {
 	createFreshLayout,
+	createPresetLayout,
 	findPane,
 	generateStartupActions,
 	type PaneNode,
@@ -16,10 +17,14 @@ import {
 	removePane,
 	type SettingsDocument,
 	splitPane,
+	swapPaneContents,
 	type TerminalLayout,
 	type TerminalProfile,
 	updatePane,
+	updateSplitRatio,
 } from "#/lib/windowsTerminalLayout";
+import LayoutExchange from "./windows-terminal-layout-builder/LayoutExchange";
+import LayoutPresets from "./windows-terminal-layout-builder/LayoutPresets";
 import PaneEditor from "./windows-terminal-layout-builder/PaneEditor";
 import StartupActionsOutput from "./windows-terminal-layout-builder/StartupActionsOutput";
 import TerminalPreview from "./windows-terminal-layout-builder/TerminalPreview";
@@ -160,6 +165,13 @@ export default function WindowsTerminalLayoutBuilder() {
 		const file = event.dataTransfer.files[0];
 		if (file) void importFile(file);
 	};
+	const replaceLayout = (next: TerminalLayout, message: string) => {
+		setLayout(next);
+		setActiveTab(0);
+		setSelectedPane(next.tabs[0]?.root.id ?? null);
+		setError(null);
+		setNotice(message);
+	};
 	return (
 		<section className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-6">
 			<div className="flex flex-wrap items-start justify-between gap-4">
@@ -221,6 +233,28 @@ export default function WindowsTerminalLayoutBuilder() {
 						setActiveTab(layout.tabs.length);
 						setSelectedPane(tab.root.id);
 					}}
+					onSwapPanes={(firstId, secondId) => {
+						setLayout((current) => ({
+							tabs: current.tabs.map((tab, index) =>
+								index === activeTab
+									? {
+											...tab,
+											root: swapPaneContents(tab.root, firstId, secondId),
+										}
+									: tab,
+							),
+						}));
+						setSelectedPane(secondId);
+					}}
+					onRatioChange={(splitId, ratio) =>
+						setLayout((current) => ({
+							tabs: current.tabs.map((tab, index) =>
+								index === activeTab
+									? { ...tab, root: updateSplitRatio(tab.root, splitId, ratio) }
+									: tab,
+							),
+						}))
+					}
 				/>
 				<PaneEditor
 					pane={pane}
@@ -249,6 +283,14 @@ export default function WindowsTerminalLayoutBuilder() {
 					}}
 				/>
 			</div>
+			<LayoutPresets
+				onChoose={(preset) =>
+					replaceLayout(
+						createPresetLayout(preset, profiles),
+						"Applied a local layout preset.",
+					)
+				}
+			/>
 			<StartupActionsOutput
 				output={output}
 				original={originalStartupActions}
@@ -259,18 +301,26 @@ export default function WindowsTerminalLayoutBuilder() {
 				}
 				onDownload={download}
 			/>
+			<LayoutExchange
+				layout={layout}
+				onImport={(next) => replaceLayout(next, "Imported a layout locally.")}
+				onNotice={setNotice}
+				onError={setError}
+			/>
 			<details className="mt-6 text-sm text-[var(--sea-ink-soft)]">
 				<summary className="cursor-pointer font-semibold text-[var(--sea-ink)]">
-					V1 support and safety
+					Support and safety
 				</summary>
 				<p>
 					This version reads and writes tabs plus <code>new-tab</code>,{" "}
 					<code>split-pane</code>, <code>focus-tab</code>, and deterministic{" "}
-					<code>move-focus</code> commands. It preserves profile GUIDs in your
-					settings file and resolves profile names when generating commands. It
-					deliberately stops on custom command lines, directional focus,
-					move/swap pane, duplicate panes, schemes, and other commands it cannot
-					round-trip safely.
+					<code>move-focus</code> commands, together with pane titles, colors,
+					color schemes, starting directories, command lines, and
+					append-command-line. It preserves profile GUIDs in your settings file
+					and resolves profile names when generating commands. It deliberately
+					stops on directional focus, move/swap pane, duplicate panes, and other
+					commands it cannot round-trip safely. The original file is never
+					changed in place.
 				</p>
 			</details>
 		</section>

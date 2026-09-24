@@ -5,8 +5,12 @@ export type PaneNode = {
 	profileGuid: string | null;
 	profileName: string | null;
 	startingDirectory: string;
+	savedDirectories: string[];
 	title: string;
 	tabColor: string;
+	commandLine: string;
+	appendCommandLine: boolean;
+	colorScheme: string;
 };
 export type SplitNode = {
 	type: "split";
@@ -30,8 +34,12 @@ export function createPane(value: Partial<PaneNode> = {}): PaneNode {
 		profileGuid: null,
 		profileName: null,
 		startingDirectory: "",
+		savedDirectories: [],
 		title: "",
 		tabColor: "",
+		commandLine: "",
+		appendCommandLine: false,
+		colorScheme: "",
 		...value,
 	};
 }
@@ -126,6 +134,9 @@ function value(tokens: string[], index: number, option: string) {
 function parsePane(tokens: string[], profiles: TerminalProfile[]) {
 	let profileName: string | null = null;
 	let startingDirectory = "";
+	let commandLine = "";
+	let appendCommandLine = false;
+	let colorScheme = "";
 	let title = "";
 	let tabColor = "";
 	let direction: SplitNode["direction"] | undefined;
@@ -144,6 +155,11 @@ function parsePane(tokens: string[], profiles: TerminalProfile[]) {
 		} else if (token === "--tabColor") {
 			tabColor = value(tokens, index, token);
 			index++;
+		} else if (token === "--colorScheme") {
+			colorScheme = value(tokens, index, token);
+			index++;
+		} else if (token === "--appendCommandLine") {
+			appendCommandLine = true;
 		} else if (token === "-s" || token === "--size") {
 			ratio = Number(value(tokens, index, token));
 			if (!ratio || ratio <= 0 || ratio >= 1)
@@ -152,7 +168,10 @@ function parsePane(tokens: string[], profiles: TerminalProfile[]) {
 		} else if (token === "-H" || token === "--horizontal")
 			direction = "horizontal";
 		else if (token === "-V" || token === "--vertical") direction = "vertical";
-		else throw new Error(`Unsupported argument: ${token}`);
+		else if (!token.startsWith("-")) {
+			commandLine = tokens.slice(index).join(" ");
+			break;
+		} else throw new Error(`Unsupported argument: ${token}`);
 	}
 	const profile = profiles.find(
 		(item) => item.name === profileName || item.guid === profileName,
@@ -162,6 +181,9 @@ function parsePane(tokens: string[], profiles: TerminalProfile[]) {
 			profileGuid: profile?.guid ?? null,
 			profileName: profile?.name ?? profileName,
 			startingDirectory,
+			commandLine,
+			appendCommandLine,
+			colorScheme,
 			title,
 			tabColor,
 		}),
@@ -280,6 +302,9 @@ function args(pane: PaneNode, profiles: TerminalProfile[]) {
 		pane.startingDirectory ? `-d ${quoted(pane.startingDirectory)}` : "",
 		pane.title ? `--title ${quoted(pane.title)}` : "",
 		pane.tabColor ? `--tabColor ${quoted(pane.tabColor)}` : "",
+		pane.colorScheme ? `--colorScheme ${quoted(pane.colorScheme)}` : "",
+		pane.appendCommandLine ? "--appendCommandLine" : "",
+		pane.commandLine,
 	]
 		.filter(Boolean)
 		.join(" ");
@@ -339,8 +364,12 @@ export function splitPane(
 				profileGuid: node.profileGuid,
 				profileName: profile?.name ?? node.profileName,
 				startingDirectory: node.startingDirectory,
+				savedDirectories: node.savedDirectories,
 				title: node.title,
 				tabColor: node.tabColor,
+				commandLine: node.commandLine,
+				appendCommandLine: node.appendCommandLine,
+				colorScheme: node.colorScheme,
 			}),
 		};
 	}
@@ -348,6 +377,137 @@ export function splitPane(
 		...node,
 		first: splitPane(node.first, paneId, direction, profiles),
 		second: splitPane(node.second, paneId, direction, profiles),
+	};
+}
+
+export function updateSplitRatio(
+	node: LayoutNode,
+	splitId: string,
+	ratio: number,
+): LayoutNode {
+	if (node.type === "pane") return node;
+	if (node.id === splitId)
+		return { ...node, ratio: Math.min(0.85, Math.max(0.15, ratio)) };
+	return {
+		...node,
+		first: updateSplitRatio(node.first, splitId, ratio),
+		second: updateSplitRatio(node.second, splitId, ratio),
+	};
+}
+
+export function swapPaneContents(
+	node: LayoutNode,
+	firstId: string,
+	secondId: string,
+): LayoutNode {
+	const first = leaves(node).find((pane) => pane.id === firstId);
+	const second = leaves(node).find((pane) => pane.id === secondId);
+	if (!first || !second || first.id === second.id) return node;
+	const firstNext = { ...first, ...second, id: first.id };
+	const secondNext = { ...second, ...first, id: second.id };
+	return updatePane(updatePane(node, firstNext), secondNext);
+}
+
+export function createPresetLayout(
+	preset: "columns" | "mainStack" | "grid",
+	profiles: TerminalProfile[],
+): TerminalLayout {
+	const pane = () =>
+		createPane(
+			profiles[0]
+				? { profileGuid: profiles[0].guid, profileName: profiles[0].name }
+				: {},
+		);
+	if (preset === "columns") {
+		const first = pane();
+		return {
+			tabs: [
+				{
+					id: id("tab"),
+					root: {
+						type: "split",
+						id: id("split"),
+						direction: "horizontal",
+						ratio: 0.5,
+						first,
+						second: pane(),
+					},
+				},
+			],
+		};
+	}
+	if (preset === "mainStack") {
+		const first = pane();
+		return {
+			tabs: [
+				{
+					id: id("tab"),
+					root: {
+						type: "split",
+						id: id("split"),
+						direction: "horizontal",
+						ratio: 0.4,
+						first,
+						second: {
+							type: "split",
+							id: id("split"),
+							direction: "vertical",
+							ratio: 0.5,
+							first: pane(),
+							second: pane(),
+						},
+					},
+				},
+			],
+		};
+	}
+	const topLeft = pane();
+	return {
+		tabs: [
+			{
+				id: id("tab"),
+				root: {
+					type: "split",
+					id: id("split"),
+					direction: "vertical",
+					ratio: 0.5,
+					first: {
+						type: "split",
+						id: id("split"),
+						direction: "horizontal",
+						ratio: 0.5,
+						first: topLeft,
+						second: pane(),
+					},
+					second: {
+						type: "split",
+						id: id("split"),
+						direction: "horizontal",
+						ratio: 0.5,
+						first: pane(),
+						second: pane(),
+					},
+				},
+			},
+		],
+	};
+}
+
+export function exportLayout(layout: TerminalLayout, includePaths = true) {
+	const sanitize = (node: LayoutNode): LayoutNode =>
+		node.type === "split"
+			? { ...node, first: sanitize(node.first), second: sanitize(node.second) }
+			: {
+					...node,
+					profileGuid: null,
+					startingDirectory: includePaths ? node.startingDirectory : "",
+					savedDirectories: includePaths ? node.savedDirectories : [],
+				};
+	return {
+		version: 1,
+		layout: {
+			tabs: layout.tabs.map((tab) => ({ ...tab, root: sanitize(tab.root) })),
+		},
 	};
 }
 export function removePane(

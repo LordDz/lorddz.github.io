@@ -13,6 +13,8 @@ type TerminalPreviewProps = {
 	onSelectTab: (index: number) => void;
 	onSelectPane: (paneId: string) => void;
 	onAddTab: (tab: TerminalLayout["tabs"][number]) => void;
+	onSwapPanes: (firstId: string, secondId: string) => void;
+	onRatioChange: (splitId: string, ratio: number) => void;
 };
 
 export default function TerminalPreview({
@@ -23,6 +25,8 @@ export default function TerminalPreview({
 	onSelectTab,
 	onSelectPane,
 	onAddTab,
+	onSwapPanes,
+	onRatioChange,
 }: TerminalPreviewProps) {
 	const currentTab = layout.tabs[activeTab];
 	return (
@@ -65,12 +69,15 @@ export default function TerminalPreview({
 							node={currentTab.root}
 							selectedPaneId={selectedPaneId}
 							onSelectPane={onSelectPane}
+							onSwapPanes={onSwapPanes}
+							onRatioChange={onRatioChange}
 						/>
 					) : null}
 				</div>
 			</div>
 			<p className="mt-2 text-xs text-[var(--sea-ink-soft)]">
-				Click a pane in the live preview to edit it.
+				Click a pane to edit it, drag one pane onto another to swap their
+				contents, or drag a divider to resize a split.
 			</p>
 		</div>
 	);

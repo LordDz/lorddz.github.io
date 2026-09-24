@@ -98,9 +98,11 @@ Most portfolio content lives in `src/data/portfolio.ts`:
 
 ## Windows Terminal Layout Builder
 
-The `/tools` page includes a local-only Windows Terminal Layout Builder. It imports a `settings.json`, reads profiles and the safe layout-oriented subset of `startupActions`, then lets visitors edit tabs and pane splits in a live preview. Download only changes `startupActions`; all other settings remain intact.
+The `/tools` page includes a local-only Windows Terminal Layout Builder. It imports a `settings.json`, reads profiles and the safe layout-oriented subset of `startupActions`, then lets visitors edit tabs and pane splits in a live preview. Download only changes `startupActions`; all other settings remain intact. Files never leave the browser.
 
-V1 supports `new-tab`, `split-pane`, `focus-tab`, `--title`, and `move-focus first|nextInOrder|previousInOrder`. It refuses startup strings containing commands or arguments it cannot faithfully round-trip (for example custom command lines, directional focus, `move-pane`, `swap-pane`, duplicate panes, and schemes).
+The builder supports `new-tab`, `split-pane`, `focus-tab`, `move-focus first|nextInOrder|previousInOrder`, `--title`, `--tabColor`, `--colorScheme`, `--appendCommandLine`, profiles, starting directories, and simple command lines. V2 adds draggable splitters, drag-to-swap pane contents, presets, saved directory shortcuts, layout-only JSON exchange, and a share link that excludes profile GUIDs and directory paths.
+
+It deliberately refuses startup strings it cannot faithfully round-trip, including directional focus, `move-pane`, `swap-pane`, duplicate panes, and unfamiliar command/option combinations. In that case it leaves the imported file untouched and explains the reason.
 
 If you want to personalize the site further, start with:
 
