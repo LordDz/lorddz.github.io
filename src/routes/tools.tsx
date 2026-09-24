@@ -1,7 +1,8 @@
+import { createFileRoute } from "@tanstack/react-router";
 import GohEntityRenameTool from "#/components/portfolio/GohEntityRenameTool";
 import GohMiMergeTool from "#/components/portfolio/GohMiMergeTool";
+import WindowsTerminalLayoutBuilder from "#/components/portfolio/WindowsTerminalLayoutBuilder";
 import { portfolioGames } from "#/data/portfolio";
-import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/tools")({
 	component: ToolsRoute,
@@ -15,11 +16,15 @@ function ToolsRoute() {
 			<section className="island-shell rise-in rounded-[2rem] px-6 py-10 sm:px-10 sm:py-12">
 				<p className="island-kicker mb-3">Utilities</p>
 				<h1 className="display-title mb-4 max-w-3xl text-4xl leading-[1.05] font-bold tracking-tight text-[var(--sea-ink)] sm:text-5xl">
-					Modding tools
+					Browser-side tools
 				</h1>
 				<p className="mb-0 max-w-3xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
 					Small browser-side tools for workflow-heavy modding tasks.
 				</p>
+			</section>
+
+			<section className="mt-10">
+				<WindowsTerminalLayoutBuilder />
 			</section>
 
 			<section className="mt-10">

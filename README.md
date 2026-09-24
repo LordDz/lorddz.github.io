@@ -96,6 +96,12 @@ Most portfolio content lives in `src/data/portfolio.ts`:
 - Update links (YouTube, Steam Workshop, Steam store)
 - Swap thumbnails and card images
 
+## Windows Terminal Layout Builder
+
+The `/tools` page includes a local-only Windows Terminal Layout Builder. It imports a `settings.json`, reads profiles and the safe layout-oriented subset of `startupActions`, then lets visitors edit tabs and pane splits in a live preview. Download only changes `startupActions`; all other settings remain intact.
+
+V1 supports `new-tab`, `split-pane`, `focus-tab`, and `move-focus first|nextInOrder|previousInOrder`. It refuses startup strings containing commands or arguments it cannot faithfully round-trip (for example custom command lines, directional focus, `move-pane`, `swap-pane`, duplicate panes, titles, and schemes).
+
 If you want to personalize the site further, start with:
 
 - `src/components/Header.tsx`
