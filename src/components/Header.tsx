@@ -43,7 +43,7 @@ export default function Header() {
 						Games
 					</Link>
 					<Link
-						to="/sc2-campaign-arcade"
+						to="/sc2CampaignArcade"
 						className="nav-link"
 						activeProps={{ className: "nav-link is-active" }}
 					>
