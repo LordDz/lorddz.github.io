@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as StackRouteImport } from './routes/stack'
+import { Route as Sc2CampaignArcadeRouteImport } from './routes/sc2-campaign-arcade'
 import { Route as NpfRouteImport } from './routes/npf'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -33,6 +34,11 @@ const ToolsRoute = ToolsRouteImport.update({
 const StackRoute = StackRouteImport.update({
   id: '/stack',
   path: '/stack',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Sc2CampaignArcadeRoute = Sc2CampaignArcadeRouteImport.update({
+  id: '/sc2-campaign-arcade',
+  path: '/sc2-campaign-arcade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NpfRoute = NpfRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRouteWithChildren
   '/games': typeof GamesRouteWithChildren
   '/npf': typeof NpfRoute
+  '/sc2-campaign-arcade': typeof Sc2CampaignArcadeRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/npf': typeof NpfRoute
+  '/sc2-campaign-arcade': typeof Sc2CampaignArcadeRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRouteWithChildren
   '/games': typeof GamesRouteWithChildren
   '/npf': typeof NpfRoute
+  '/sc2-campaign-arcade': typeof Sc2CampaignArcadeRoute
   '/stack': typeof StackRoute
   '/tools': typeof ToolsRoute
   '/demo/table': typeof DemoTableRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/games'
     | '/npf'
+    | '/sc2-campaign-arcade'
     | '/stack'
     | '/tools'
     | '/demo/table'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/npf'
+    | '/sc2-campaign-arcade'
     | '/stack'
     | '/tools'
     | '/demo/table'
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/games'
     | '/npf'
+    | '/sc2-campaign-arcade'
     | '/stack'
     | '/tools'
     | '/demo/table'
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRouteWithChildren
   GamesRoute: typeof GamesRouteWithChildren
   NpfRoute: typeof NpfRoute
+  Sc2CampaignArcadeRoute: typeof Sc2CampaignArcadeRoute
   StackRoute: typeof StackRoute
   ToolsRoute: typeof ToolsRoute
   DemoTableRoute: typeof DemoTableRoute
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       path: '/stack'
       fullPath: '/stack'
       preLoaderRoute: typeof StackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sc2-campaign-arcade': {
+      id: '/sc2-campaign-arcade'
+      path: '/sc2-campaign-arcade'
+      fullPath: '/sc2-campaign-arcade'
+      preLoaderRoute: typeof Sc2CampaignArcadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/npf': {
@@ -358,6 +378,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRouteWithChildren,
   GamesRoute: GamesRouteWithChildren,
   NpfRoute: NpfRoute,
+  Sc2CampaignArcadeRoute: Sc2CampaignArcadeRoute,
   StackRoute: StackRoute,
   ToolsRoute: ToolsRoute,
   DemoTableRoute: DemoTableRoute,
@@ -368,12 +389,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
