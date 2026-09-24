@@ -64,6 +64,15 @@ export default function PaneEditor({
 				/>
 			</label>
 			<label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
+				Pane title
+				<input
+					value={pane.title}
+					onChange={(event) => onChange({ title: event.target.value })}
+					className="mt-1 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-normal"
+					placeholder="Optional title"
+				/>
+			</label>
+			<label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-[var(--sea-ink-soft)]">
 				Tab color
 				<input
 					type="color"

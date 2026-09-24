@@ -269,8 +269,8 @@ export default function WindowsTerminalLayoutBuilder() {
 					<code>move-focus</code> commands. It preserves profile GUIDs in your
 					settings file and resolves profile names when generating commands. It
 					deliberately stops on custom command lines, directional focus,
-					move/swap pane, duplicate panes, titles, schemes, and other commands
-					it cannot round-trip safely.
+					move/swap pane, duplicate panes, schemes, and other commands it cannot
+					round-trip safely.
 				</p>
 			</details>
 		</section>

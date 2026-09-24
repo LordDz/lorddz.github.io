@@ -1,6 +1,6 @@
 import type { LayoutNode } from "#/lib/windowsTerminalLayout";
 
-type Props = {
+type TerminalPanePreviewProps = {
 	node: LayoutNode;
 	selectedPaneId: string | null;
 	onSelectPane: (paneId: string) => void;
@@ -10,8 +10,8 @@ export default function TerminalPanePreview({
 	node,
 	selectedPaneId,
 	onSelectPane,
-}: Props) {
-	if (node.type === "pane")
+}: TerminalPanePreviewProps) {
+	if (node.type === "pane") {
 		return (
 			<button
 				type="button"
@@ -31,6 +31,7 @@ export default function TerminalPanePreview({
 				<span className="mt-4 block text-slate-500">PS&gt; _</span>
 			</button>
 		);
+	}
 	return (
 		<div
 			className={`flex min-h-0 flex-1 gap-1 ${node.direction === "horizontal" ? "flex-row" : "flex-col"}`}

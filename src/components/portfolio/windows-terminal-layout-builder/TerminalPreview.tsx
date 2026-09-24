@@ -5,7 +5,7 @@ import {
 } from "#/lib/windowsTerminalLayout";
 import TerminalPanePreview from "./TerminalPanePreview";
 
-type Props = {
+type TerminalPreviewProps = {
 	layout: TerminalLayout;
 	profiles: TerminalProfile[];
 	activeTab: number;
@@ -23,7 +23,7 @@ export default function TerminalPreview({
 	onSelectTab,
 	onSelectPane,
 	onAddTab,
-}: Props) {
+}: TerminalPreviewProps) {
 	const currentTab = layout.tabs[activeTab];
 	return (
 		<div>

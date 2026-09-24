@@ -5,6 +5,7 @@ export type PaneNode = {
 	profileGuid: string | null;
 	profileName: string | null;
 	startingDirectory: string;
+	title: string;
 	tabColor: string;
 };
 export type SplitNode = {
@@ -29,6 +30,7 @@ export function createPane(value: Partial<PaneNode> = {}): PaneNode {
 		profileGuid: null,
 		profileName: null,
 		startingDirectory: "",
+		title: "",
 		tabColor: "",
 		...value,
 	};
@@ -124,6 +126,7 @@ function value(tokens: string[], index: number, option: string) {
 function parsePane(tokens: string[], profiles: TerminalProfile[]) {
 	let profileName: string | null = null;
 	let startingDirectory = "";
+	let title = "";
 	let tabColor = "";
 	let direction: SplitNode["direction"] | undefined;
 	let ratio: number | undefined;
@@ -134,6 +137,9 @@ function parsePane(tokens: string[], profiles: TerminalProfile[]) {
 			index++;
 		} else if (token === "-d" || token === "--startingDirectory") {
 			startingDirectory = value(tokens, index, token);
+			index++;
+		} else if (token === "--title") {
+			title = value(tokens, index, token);
 			index++;
 		} else if (token === "--tabColor") {
 			tabColor = value(tokens, index, token);
@@ -156,6 +162,7 @@ function parsePane(tokens: string[], profiles: TerminalProfile[]) {
 			profileGuid: profile?.guid ?? null,
 			profileName: profile?.name ?? profileName,
 			startingDirectory,
+			title,
 			tabColor,
 		}),
 		direction,
@@ -271,6 +278,7 @@ function args(pane: PaneNode, profiles: TerminalProfile[]) {
 	return [
 		name ? `-p ${quoted(name)}` : "",
 		pane.startingDirectory ? `-d ${quoted(pane.startingDirectory)}` : "",
+		pane.title ? `--title ${quoted(pane.title)}` : "",
 		pane.tabColor ? `--tabColor ${quoted(pane.tabColor)}` : "",
 	]
 		.filter(Boolean)
@@ -331,6 +339,7 @@ export function splitPane(
 				profileGuid: node.profileGuid,
 				profileName: profile?.name ?? node.profileName,
 				startingDirectory: node.startingDirectory,
+				title: node.title,
 				tabColor: node.tabColor,
 			}),
 		};

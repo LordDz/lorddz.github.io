@@ -22,7 +22,7 @@ describe("Windows Terminal layout", () => {
 		]));
 	it("parses tabs, panes, directories and colors", () => {
 		const layout = parseStartupActions(
-			'new-tab -p "PowerShell" -d "C:\\Code" --tabColor "#4fb8b2" ; split-pane -H -p "Ubuntu" --size .4 ; new-tab -p "Ubuntu"',
+			'new-tab -p "PowerShell" -d "C:\\Code" --title "Work" --tabColor "#4fb8b2" ; split-pane -H -p "Ubuntu" --size .4 ; new-tab -p "Ubuntu"',
 			profiles,
 		);
 		expect(layout.tabs).toHaveLength(2);
@@ -32,6 +32,11 @@ describe("Windows Terminal layout", () => {
 				layout.tabs[0].root.second.type === "pane" &&
 				layout.tabs[0].root.second.profileGuid,
 		).toBe("{ubuntu}");
+		expect(
+			layout.tabs[0].root.type === "split" &&
+				layout.tabs[0].root.first.type === "pane" &&
+				layout.tabs[0].root.first.title,
+		).toBe("Work");
 	});
 	it("rejects commands it cannot preserve", () =>
 		expect(() =>

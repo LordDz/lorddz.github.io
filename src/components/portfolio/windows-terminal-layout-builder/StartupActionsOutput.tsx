@@ -1,17 +1,18 @@
 import ActionButton from "#/components/ActionButton/ActionButton";
 
-type Props = {
+type StartupActionsOutputProps = {
 	output: string;
 	original: string;
 	onCopy: () => void;
 	onDownload: () => void;
 };
+
 export default function StartupActionsOutput({
 	output,
 	original,
 	onCopy,
 	onDownload,
-}: Props) {
+}: StartupActionsOutputProps) {
 	return (
 		<div className="mt-6 grid gap-5 lg:grid-cols-2">
 			<div>
